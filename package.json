@@ -1,0 +1,66 @@
+{
+  "name": "console-mini",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Turn a Mac mini into a living-room retro/PS console with a beautiful big-picture launcher.",
+  "main": "dist-electron/main.js",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "dev:electron": "concurrently -k \"vite\" \"wait-on http://localhost:5173 && tsc -p electron && electron .\"",
+    "build": "tsc -b && vite build && tsc -p electron",
+    "start": "electron .",
+    "package": "npm run build && electron-builder --mac",
+    "lint": "eslint .",
+    "setup:emulators": "bash scripts/install-emulators.sh"
+  },
+  "dependencies": {
+    "framer-motion": "^11.11.17",
+    "lucide-react": "^0.460.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "zustand": "^5.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.9.0",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.3",
+    "autoprefixer": "^10.4.20",
+    "concurrently": "^9.1.0",
+    "electron": "^33.2.0",
+    "electron-builder": "^25.1.8",
+    "eslint": "^9.15.0",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.15",
+    "typescript": "^5.6.3",
+    "vite": "^5.4.11",
+    "wait-on": "^8.0.1"
+  },
+  "build": {
+    "appId": "io.consolemini.app",
+    "productName": "ConsoleMini",
+    "files": ["dist/**/*", "dist-electron/**/*", "config/**/*", "package.json"],
+    "extraResources": [{ "from": "scripts", "to": "scripts" }],
+    "mac": {
+      "category": "public.app-category.games",
+      "target": [
+        { "target": "dmg", "arch": ["arm64", "x64"] },
+        { "target": "zip", "arch": ["arm64", "x64"] }
+      ],
+      "icon": "build/icon.icns",
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false,
+      "entitlements": "build/entitlements.mac.plist",
+      "entitlementsInherit": "build/entitlements.mac.plist",
+      "notarize": false
+    },
+    "dmg": {
+      "icon": "build/icon.icns",
+      "title": "ConsoleMini ${version}"
+    },
+    "directories": {
+      "buildResources": "build"
+    }
+  }
+}

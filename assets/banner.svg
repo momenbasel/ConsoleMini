@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 480" width="1600" height="480">
+  <defs>
+    <linearGradient id="bbg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#05060a"/>
+      <stop offset="0.55" stop-color="#0f1422"/>
+      <stop offset="1" stop-color="#1a0d2a"/>
+    </linearGradient>
+    <radialGradient id="ba" cx="0.18" cy="0.25" r="0.6">
+      <stop offset="0" stop-color="#28e2ff" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#28e2ff" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="bb" cx="0.85" cy="0.85" r="0.7">
+      <stop offset="0" stop-color="#ff3da6" stop-opacity="0.45"/>
+      <stop offset="1" stop-color="#ff3da6" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="bc" cx="0.6" cy="0.1" r="0.4">
+      <stop offset="0" stop-color="#8a5cff" stop-opacity="0.45"/>
+      <stop offset="1" stop-color="#8a5cff" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="brand" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#28e2ff"/>
+      <stop offset="0.5" stop-color="#8a5cff"/>
+      <stop offset="1" stop-color="#ff3da6"/>
+    </linearGradient>
+    <linearGradient id="case2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f5ecd2"/>
+      <stop offset="1" stop-color="#c8bca0"/>
+    </linearGradient>
+    <linearGradient id="screen2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0a3a2c"/>
+      <stop offset="1" stop-color="#031c14"/>
+    </linearGradient>
+    <pattern id="scan2" width="3" height="3" patternUnits="userSpaceOnUse">
+      <rect width="3" height="1.4" fill="#9affd0" fill-opacity="0.08"/>
+    </pattern>
+    <filter id="g2" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="9" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <rect width="1600" height="480" rx="32" fill="url(#bbg)"/>
+  <rect width="1600" height="480" rx="32" fill="url(#ba)"/>
+  <rect width="1600" height="480" rx="32" fill="url(#bb)"/>
+  <rect width="1600" height="480" rx="32" fill="url(#bc)"/>
+
+  <!-- grid -->
+  <g opacity="0.10" stroke="#fff" stroke-width="1">
+    <path d="M0 80 H1600 M0 160 H1600 M0 240 H1600 M0 320 H1600 M0 400 H1600"/>
+    <path d="M120 0 V480 M280 0 V480 M440 0 V480 M600 0 V480 M760 0 V480 M920 0 V480 M1080 0 V480 M1240 0 V480 M1400 0 V480"/>
+  </g>
+
+  <!-- retro mac on left -->
+  <g transform="translate(70 60)">
+    <ellipse cx="180" cy="380" rx="170" ry="12" fill="#000" opacity="0.5"/>
+    <rect x="40" y="0" width="280" height="360" rx="22" fill="url(#case2)" stroke="#3a3530" stroke-width="3"/>
+    <rect x="40" y="290" width="280" height="70" rx="22" fill="#bdb094"/>
+    <line x1="40" y1="290" x2="320" y2="290" stroke="#3a3530" stroke-width="3"/>
+
+    <rect x="68" y="32" width="224" height="180" rx="12" fill="#1a1410" stroke="#3a3530" stroke-width="3"/>
+    <rect x="80" y="44" width="200" height="156" rx="6" fill="url(#screen2)"/>
+    <rect x="80" y="44" width="200" height="156" rx="6" fill="url(#scan2)"/>
+
+    <g transform="translate(180 122)" filter="url(#g2)">
+      <rect x="-36" y="-22" width="11" height="11" fill="#9affd0"/>
+      <rect x="25" y="-22" width="11" height="11" fill="#9affd0"/>
+      <path d="M-46 4 Q0 44 46 4" stroke="#9affd0" stroke-width="7" fill="none" stroke-linecap="round"/>
+    </g>
+
+    <rect x="200" y="232" width="80" height="9" rx="2" fill="#1a1410"/>
+    <g transform="translate(78 232)" fill="#3a3530" opacity="0.55">
+      <circle cx="3" cy="3" r="2"/><circle cx="12" cy="3" r="2"/><circle cx="21" cy="3" r="2"/>
+      <circle cx="3" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="21" cy="12" r="2"/>
+    </g>
+
+    <text x="180" y="332" text-anchor="middle" font-family="'Courier New',monospace" font-size="18" font-weight="700" fill="#3a3530" letter-spacing="2">ConsoleMini</text>
+  </g>
+
+  <!-- title block right -->
+  <g transform="translate(540 130)">
+    <text font-family="'Space Grotesk', system-ui, sans-serif" font-size="92" font-weight="800" fill="url(#brand)">ConsoleMini</text>
+    <text y="58" font-family="'Space Grotesk', system-ui, sans-serif" font-size="30" font-weight="500" fill="#cfd6ea">
+      Mac mini -> living-room console.
+    </text>
+    <text y="100" font-family="'JetBrains Mono', monospace" font-size="18" fill="#7a86a8" letter-spacing="3">
+      PS1  PS2  PS3  PS4  PSP  N64  SNES  NES  GBA  DC
+    </text>
+
+    <!-- pills -->
+    <g transform="translate(0 142)" font-family="'JetBrains Mono', monospace" font-size="14" fill="#cfd6ea">
+      <g>
+        <rect x="0" y="0" width="178" height="36" rx="18" fill="#fff" fill-opacity="0.06" stroke="#fff" stroke-opacity="0.18"/>
+        <text x="20" y="23">Apple Silicon native</text>
+      </g>
+      <g transform="translate(196 0)">
+        <rect x="0" y="0" width="170" height="36" rx="18" fill="#28e2ff" fill-opacity="0.10" stroke="#28e2ff" stroke-opacity="0.45"/>
+        <text x="20" y="23" fill="#28e2ff">Controller-first UI</text>
+      </g>
+      <g transform="translate(384 0)">
+        <rect x="0" y="0" width="160" height="36" rx="18" fill="#b9ff5e" fill-opacity="0.10" stroke="#b9ff5e" stroke-opacity="0.45"/>
+        <text x="20" y="23" fill="#b9ff5e">Big-picture mode</text>
+      </g>
+    </g>
+  </g>
+</svg>

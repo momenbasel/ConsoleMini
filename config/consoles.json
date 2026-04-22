@@ -1,0 +1,8 @@
+{
+  "_comment": "Override per-console emulator paths/args without code changes. Loaded at runtime if present.",
+  "ps1": { "binary": "/Applications/DuckStation.app/Contents/MacOS/DuckStation", "args": ["-fullscreen"] },
+  "ps2": { "binary": "/Applications/PCSX2.app/Contents/MacOS/PCSX2", "args": ["--"] },
+  "ps3": { "binary": "/Applications/RPCS3.app/Contents/MacOS/rpcs3", "args": ["--no-gui"] },
+  "ps4": { "binary": "/Applications/shadPS4.app/Contents/MacOS/shadPS4", "args": [] },
+  "psp": { "binary": "/Applications/PPSSPPSDL.app/Contents/MacOS/PPSSPPSDL", "args": [] }
+}

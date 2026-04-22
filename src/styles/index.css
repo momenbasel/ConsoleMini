@@ -1,0 +1,56 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  overflow: hidden;
+  font-family: "Space Grotesk", system-ui, sans-serif;
+  background: #05060a;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+@layer components {
+  .glass {
+    @apply bg-white/[0.04] backdrop-blur-xl border border-white/10;
+  }
+  .glass-strong {
+    @apply bg-white/[0.07] backdrop-blur-2xl border border-white/15;
+  }
+  .pill {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] uppercase tracking-widest font-mono;
+  }
+  .focus-ring {
+    @apply outline-none ring-0 focus-visible:ring-2 focus-visible:ring-neon-cyan/70;
+  }
+  .grid-bg {
+    background-image: linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+    background-size: 48px 48px;
+  }
+  .text-gradient {
+    background: linear-gradient(120deg, #28e2ff 0%, #8a5cff 50%, #ff3da6 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+}
