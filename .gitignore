@@ -11,6 +11,8 @@ release/
 .cache/
 coverage/
 *.tsbuildinfo
+vite.config.js
+vite.config.d.ts
 .idea/
 .vscode/
 roms/
