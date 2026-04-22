@@ -74,7 +74,18 @@ The Settings tab inside the app shows live install status and one-click installs
 
 ## Install
 
-### From release (recommended)
+### Homebrew (recommended)
+
+```bash
+brew tap momenbasel/tap
+brew install --cask consolemini
+```
+
+First launch: right-click `ConsoleMini.app` in `/Applications` and choose **Open** (until notarization is stapled).
+
+Upgrade later with `brew upgrade --cask consolemini`.
+
+### From release
 
 ```bash
 open https://github.com/momenbasel/ConsoleMini/releases/latest
