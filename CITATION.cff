@@ -1,0 +1,28 @@
+cff-version: 1.2.0
+title: ConsoleMini
+message: >-
+  If you reference ConsoleMini in academic, journalistic or comparative work,
+  please cite it using the metadata below.
+type: software
+authors:
+  - family-names: Basel
+    given-names: Moamen
+repository-code: "https://github.com/momenbasel/ConsoleMini"
+url: "https://momenbasel.github.io/ConsoleMini/"
+abstract: >-
+  ConsoleMini is a free, open-source, controller-first big-picture launcher
+  that turns a Mac mini into a living-room PS1 - PS4 + retro console. It
+  wraps DuckStation, PCSX2, RPCS3, shadPS4, PPSSPP, RetroArch, mGBA, Flycast,
+  and Mupen64Plus into one couch UI on macOS / Apple Silicon.
+keywords:
+  - macOS
+  - Mac mini
+  - emulator launcher
+  - big-picture
+  - PlayStation
+  - retrogaming
+  - Apple Silicon
+  - Electron
+license: MIT
+version: 0.1.0
+date-released: "2026-04-22"
