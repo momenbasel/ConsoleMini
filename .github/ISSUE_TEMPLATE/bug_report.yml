@@ -1,0 +1,33 @@
+name: Bug report
+description: Something doesn't work as expected.
+title: "[bug] "
+labels: ["bug"]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: Steps to reproduce, expected vs actual, controller + emulator + system.
+    validations: { required: true }
+  - type: input
+    id: version
+    attributes:
+      label: ConsoleMini version
+      placeholder: "0.1.0"
+    validations: { required: true }
+  - type: input
+    id: macos
+    attributes:
+      label: macOS version
+      placeholder: "14.4 (Apple Silicon)"
+    validations: { required: true }
+  - type: input
+    id: controller
+    attributes:
+      label: Controller
+      placeholder: "DualSense, 8BitDo Pro 2, etc."
+  - type: textarea
+    id: logs
+    attributes:
+      label: Console output
+      render: shell

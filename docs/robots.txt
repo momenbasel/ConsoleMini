@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://momenbasel.github.io/ConsoleMini/sitemap.xml

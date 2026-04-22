@@ -33,7 +33,7 @@ async function createWindow() {
   win.once("ready-to-show", () => win?.show());
 
   const devUrl = process.env.VITE_DEV_SERVER_URL || "http://localhost:5173";
-  if (process.env.NODE_ENV !== "production" && process.env.ELECTRON_DEV !== "0") {
+  if (!app.isPackaged && process.env.ELECTRON_DEV !== "0") {
     await win.loadURL(devUrl);
   } else {
     await win.loadFile(path.join(__dirname, "../dist/index.html"));

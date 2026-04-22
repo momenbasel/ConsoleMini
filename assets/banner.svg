@@ -88,18 +88,18 @@
     </text>
 
     <!-- pills -->
-    <g transform="translate(0 142)" font-family="'JetBrains Mono', monospace" font-size="14" fill="#cfd6ea">
+    <g transform="translate(0 142)" font-family="'JetBrains Mono', 'Courier New', monospace" font-size="14" fill="#cfd6ea">
       <g>
-        <rect x="0" y="0" width="178" height="36" rx="18" fill="#fff" fill-opacity="0.06" stroke="#fff" stroke-opacity="0.18"/>
-        <text x="20" y="23">Apple Silicon native</text>
+        <rect x="0" y="0" width="220" height="38" rx="19" fill="#fff" fill-opacity="0.06" stroke="#fff" stroke-opacity="0.18"/>
+        <text x="110" y="24" text-anchor="middle">Apple Silicon native</text>
       </g>
-      <g transform="translate(196 0)">
-        <rect x="0" y="0" width="170" height="36" rx="18" fill="#28e2ff" fill-opacity="0.10" stroke="#28e2ff" stroke-opacity="0.45"/>
-        <text x="20" y="23" fill="#28e2ff">Controller-first UI</text>
+      <g transform="translate(240 0)">
+        <rect x="0" y="0" width="200" height="38" rx="19" fill="#28e2ff" fill-opacity="0.10" stroke="#28e2ff" stroke-opacity="0.45"/>
+        <text x="100" y="24" text-anchor="middle" fill="#28e2ff">Controller UI</text>
       </g>
-      <g transform="translate(384 0)">
-        <rect x="0" y="0" width="160" height="36" rx="18" fill="#b9ff5e" fill-opacity="0.10" stroke="#b9ff5e" stroke-opacity="0.45"/>
-        <text x="20" y="23" fill="#b9ff5e">Big-picture mode</text>
+      <g transform="translate(460 0)">
+        <rect x="0" y="0" width="200" height="38" rx="19" fill="#b9ff5e" fill-opacity="0.10" stroke="#b9ff5e" stroke-opacity="0.45"/>
+        <text x="100" y="24" text-anchor="middle" fill="#b9ff5e">Big-picture mode</text>
       </g>
     </g>
   </g>

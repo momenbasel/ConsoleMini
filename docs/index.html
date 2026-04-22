@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+
+<title>ConsoleMini - Turn your Mac mini into a PS1-PS4 living-room console</title>
+<meta name="description" content="ConsoleMini is a free, open-source, controller-first big-picture launcher that turns a Mac mini into a retro / PlayStation console. Apple Silicon native, codesigned, MIT. PS1, PS2, PS3, PS4, PSP, N64, SNES, NES, GBA, Dreamcast." />
+<meta name="keywords" content="ConsoleMini, Mac mini console, mac mini emulator, mac mini retro, macOS emulator launcher, big picture mac, PlayStation emulator mac, PS1 mac, PS2 mac, PS3 mac, PS4 mac, DuckStation, PCSX2, RPCS3, shadPS4, PPSSPP, RetroArch, mGBA, Flycast, Mupen64Plus, OpenEmu alternative, Pegasus alternative, EmulationStation mac, retrogaming mac, apple silicon emulator, dualshock mac, dualsense mac, kiosk mac, living room mac, electron emulator frontend" />
+<meta name="author" content="Moamen Basel" />
+<meta name="robots" content="index,follow,max-snippet:-1,max-image-preview:large" />
+<link rel="canonical" href="https://momenbasel.github.io/ConsoleMini/" />
+
+<!-- Open Graph -->
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="ConsoleMini" />
+<meta property="og:title" content="ConsoleMini - Turn your Mac mini into a PS1-PS4 living-room console" />
+<meta property="og:description" content="Free, open-source, controller-first big-picture launcher for the Mac mini. PS1-PS4 + retro. Apple Silicon native." />
+<meta property="og:url" content="https://momenbasel.github.io/ConsoleMini/" />
+<meta property="og:image" content="https://raw.githubusercontent.com/momenbasel/ConsoleMini/main/build/banner.png" />
+<meta property="og:image:width" content="1600" />
+<meta property="og:image:height" content="480" />
+<meta property="og:image:alt" content="ConsoleMini banner with retro Macintosh icon" />
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="ConsoleMini - Mac mini -> living-room console" />
+<meta name="twitter:description" content="Free, open-source, controller-first big-picture launcher for PS1-PS4 + retro on macOS." />
+<meta name="twitter:image" content="https://raw.githubusercontent.com/momenbasel/ConsoleMini/main/build/banner.png" />
+
+<link rel="icon" type="image/png" href="https://raw.githubusercontent.com/momenbasel/ConsoleMini/main/build/icon.png" />
+<link rel="apple-touch-icon" href="https://raw.githubusercontent.com/momenbasel/ConsoleMini/main/build/icon.png" />
+
+<!-- JSON-LD: SoftwareApplication -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "ConsoleMini",
+  "operatingSystem": "macOS",
+  "applicationCategory": "GameApplication",
+  "applicationSubCategory": "EmulatorFrontend",
+  "downloadUrl": "https://github.com/momenbasel/ConsoleMini/releases/latest",
+  "softwareVersion": "0.1.0",
+  "license": "https://opensource.org/licenses/MIT",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "author": { "@type": "Person", "name": "Moamen Basel" },
+  "description": "Controller-first big-picture launcher that turns a Mac mini into a retro / PlayStation console. Wraps DuckStation, PCSX2, RPCS3, shadPS4, PPSSPP, RetroArch, mGBA, Flycast, Mupen64Plus.",
+  "image": "https://raw.githubusercontent.com/momenbasel/ConsoleMini/main/build/banner.png",
+  "screenshot": "https://raw.githubusercontent.com/momenbasel/ConsoleMini/main/build/banner.png",
+  "url": "https://momenbasel.github.io/ConsoleMini/",
+  "sameAs": ["https://github.com/momenbasel/ConsoleMini"],
+  "keywords": "Mac mini console, PlayStation emulator macOS, big picture launcher, Apple Silicon emulator"
+}
+</script>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--ink:#05060a;--ink2:#0f1422;--cyan:#28e2ff;--violet:#8a5cff;--pink:#ff3da6;--lime:#b9ff5e;--amber:#ffb547;--text:#e7ecf6;--mute:#8a93ad;--card:rgba(255,255,255,.04);--cardb:rgba(255,255,255,.10)}
+html,body{background:var(--ink);color:var(--text);font-family:'Space Grotesk',system-ui,-apple-system,sans-serif;line-height:1.55;scroll-behavior:smooth;-webkit-font-smoothing:antialiased}
+a{color:var(--cyan);text-decoration:none}
+a:hover{text-decoration:underline}
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+header{padding:18px 0;position:sticky;top:0;z-index:50;backdrop-filter:blur(14px);background:rgba(5,6,10,.7);border-bottom:1px solid rgba(255,255,255,.06)}
+.nav{display:flex;align-items:center;gap:18px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px}
+.brand img{width:32px;height:32px;border-radius:8px}
+.nav a.btn{margin-left:auto;background:linear-gradient(120deg,var(--cyan),var(--violet),var(--pink));color:#fff;padding:10px 16px;border-radius:12px;font-weight:600}
+.hero{padding:80px 0 48px;background:radial-gradient(60% 40% at 18% 25%,rgba(40,226,255,.20),transparent 60%),radial-gradient(50% 35% at 80% 20%,rgba(138,92,255,.20),transparent 55%),radial-gradient(40% 35% at 60% 90%,rgba(255,61,166,.18),transparent 60%);text-align:center}
+.hero h1{font-size:clamp(40px,6vw,76px);letter-spacing:-.02em;line-height:1.05;font-weight:800;background:linear-gradient(120deg,var(--cyan),var(--violet) 50%,var(--pink));-webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:20px}
+.hero p.lead{color:var(--mute);font-size:clamp(17px,1.6vw,21px);max-width:740px;margin:0 auto 28px}
+.cta{display:inline-flex;flex-wrap:wrap;gap:12px;justify-content:center}
+.cta a{padding:14px 22px;border-radius:14px;font-weight:600}
+.cta .primary{background:#fff;color:#06070d}
+.cta .ghost{background:var(--card);border:1px solid var(--cardb);color:var(--text)}
+.banner{margin:48px auto 0;border-radius:24px;overflow:hidden;border:1px solid var(--cardb);box-shadow:0 30px 60px -25px rgba(0,0,0,.7);max-width:1280px}
+.banner img{width:100%;display:block}
+.section{padding:72px 0}
+.section h2{font-size:clamp(28px,3vw,40px);font-weight:700;margin-bottom:14px;letter-spacing:-.01em}
+.section p.subtitle{color:var(--mute);max-width:720px;margin-bottom:36px}
+.grid{display:grid;gap:18px}
+.cards-3{grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.card{background:var(--card);border:1px solid var(--cardb);border-radius:18px;padding:22px;backdrop-filter:blur(8px)}
+.card h3{font-size:18px;margin-bottom:8px;font-weight:600}
+.card p{color:var(--mute);font-size:14.5px}
+.card .dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:8px;vertical-align:middle}
+.consoles{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px}
+.console{padding:18px;border-radius:16px;background:var(--card);border:1px solid var(--cardb);position:relative;overflow:hidden}
+.console:before{content:"";position:absolute;inset:0;opacity:.18;background:radial-gradient(80% 80% at 0 0,var(--c,var(--cyan)),transparent 60%)}
+.console h4{position:relative;font-weight:700;font-size:20px}
+.console small{position:relative;color:var(--mute);display:block;margin-top:4px}
+.console .emu{position:relative;display:block;margin-top:10px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--mute)}
+table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--cardb);border-radius:12px;overflow:hidden;font-size:14.5px}
+th,td{padding:12px 14px;text-align:left;border-bottom:1px solid rgba(255,255,255,.06)}
+th{background:rgba(255,255,255,.05);font-weight:600;color:#cfd6ea}
+tr:last-child td{border:none}
+code,pre{font-family:'JetBrains Mono','Fira Code',monospace;font-size:13.5px}
+pre{background:#0a0d18;border:1px solid var(--cardb);border-radius:14px;padding:18px;overflow:auto;color:#cfd6ea}
+.faq details{background:var(--card);border:1px solid var(--cardb);border-radius:12px;padding:14px 18px;margin-bottom:10px}
+.faq summary{cursor:pointer;font-weight:600}
+.faq p{margin-top:10px;color:var(--mute);font-size:14.5px}
+footer{padding:42px 0 60px;color:var(--mute);text-align:center;border-top:1px solid rgba(255,255,255,.06);margin-top:40px;font-size:14px}
+footer a{color:#cfd6ea}
+.kbd{font-family:'JetBrains Mono',monospace;background:var(--card);border:1px solid var(--cardb);padding:2px 8px;border-radius:6px;font-size:12px}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:999px;border:1px solid var(--cardb);background:var(--card);font-size:11.5px;text-transform:uppercase;letter-spacing:.18em;color:#cfd6ea;margin-right:8px}
+.pill.lime{color:var(--lime);border-color:rgba(185,255,94,.4)}
+.pill.amber{color:var(--amber);border-color:rgba(255,181,71,.4)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <a href="#" class="brand"><img src="https://raw.githubusercontent.com/momenbasel/ConsoleMini/main/build/icon.png" alt="ConsoleMini icon"/>ConsoleMini</a>
+    <a href="#features">Features</a>
+    <a href="#systems">Systems</a>
+    <a href="#install">Install</a>
+    <a href="#faq">FAQ</a>
+    <a class="btn" href="https://github.com/momenbasel/ConsoleMini/releases/latest">Download DMG</a>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <span class="pill lime">Apple Silicon native</span>
+    <span class="pill">macOS 12+</span>
+    <span class="pill amber">v0.1 alpha</span>
+
+    <h1>Turn your Mac mini into a&nbsp;living-room console.</h1>
+    <p class="lead">ConsoleMini is a free, open-source, controller-first big-picture launcher that wraps the best macOS emulators - <b>DuckStation, PCSX2, RPCS3, shadPS4, PPSSPP, RetroArch, mGBA, Flycast</b> - in one couch UI. Plug a controller. Pick a system. Play.</p>
+
+    <div class="cta">
+      <a class="primary" href="https://github.com/momenbasel/ConsoleMini/releases/latest">Download for macOS</a>
+      <a class="ghost" href="https://github.com/momenbasel/ConsoleMini">Star on GitHub</a>
+    </div>
+
+    <div class="banner">
+      <img src="https://raw.githubusercontent.com/momenbasel/ConsoleMini/main/build/banner.png" alt="ConsoleMini big-picture launcher with PS1, PS2, PS3, PS4, PSP, N64, SNES, NES, GBA, Dreamcast"/>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="features">
+  <div class="wrap">
+    <h2>Built for the couch.</h2>
+    <p class="subtitle">No keyboard, no mouse, no friction. Boot the app and your TV is a console.</p>
+    <div class="grid cards-3">
+      <div class="card"><h3><span class="dot" style="background:#28e2ff"></span>Controller-first</h3><p>Full HTML5 Gamepad API navigation - DualShock, DualSense, Xbox, 8BitDo. Each emulator owns in-game input.</p></div>
+      <div class="card"><h3><span class="dot" style="background:#8a5cff"></span>10 systems day one</h3><p>PS1, PS2, PS3, PS4, PSP, N64, SNES, NES, GBA, Dreamcast - one launcher, one UI.</p></div>
+      <div class="card"><h3><span class="dot" style="background:#ff3da6"></span>Beautiful big picture</h3><p>Glass cards, aurora gradients, per-console accent glow - tuned for living-room viewing distance.</p></div>
+      <div class="card"><h3><span class="dot" style="background:#b9ff5e"></span>Apple Silicon native</h3><p>arm64 + x64 builds. Hardened runtime, codesigned with Developer ID, notarization in flight.</p></div>
+      <div class="card"><h3><span class="dot" style="background:#ffb547"></span>One-shot install</h3><p>Bundled Homebrew script grabs every supported emulator. ROM folder scanner indexes by extension.</p></div>
+      <div class="card"><h3><span class="dot" style="background:#fff"></span>Kiosk mode</h3><p>Auto-launch at login, disable sleep, hide Dock. Mac mini boots straight into the launcher.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="systems">
+  <div class="wrap">
+    <h2>Every system, one launcher.</h2>
+    <p class="subtitle">ConsoleMini hands the ROM path to the right emulator. The real teams below do the heavy lifting - all credit to them.</p>
+    <table>
+      <thead><tr><th>System</th><th>Emulator</th><th>Install</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td><b>PlayStation (PS1)</b></td><td>DuckStation</td><td><code>brew install --cask duckstation</code></td><td>Stable, fast on M-series</td></tr>
+        <tr><td><b>PlayStation 2</b></td><td>PCSX2</td><td><code>brew install --cask pcsx2</code></td><td>Apple Silicon native</td></tr>
+        <tr><td><b>PlayStation 3</b></td><td>RPCS3</td><td><code>brew install --cask rpcs3</code></td><td>macOS arm64 build - heavy</td></tr>
+        <tr><td><b>PlayStation 4</b></td><td>shadPS4</td><td>manual download</td><td>Experimental, low compatibility</td></tr>
+        <tr><td><b>PSP</b></td><td>PPSSPP</td><td><code>brew install --cask ppsspp</code></td><td>4x native easily</td></tr>
+        <tr><td><b>Nintendo 64</b></td><td>Mupen64Plus</td><td><code>brew install mupen64plus</code></td><td>CLI core</td></tr>
+        <tr><td><b>SNES / NES</b></td><td>RetroArch + cores</td><td><code>brew install --cask retroarch</code></td><td>Pull cores from Online Updater</td></tr>
+        <tr><td><b>GBA</b></td><td>mGBA</td><td><code>brew install --cask mgba</code></td><td></td></tr>
+        <tr><td><b>Dreamcast</b></td><td>Flycast</td><td><code>brew install --cask flycast</code></td><td></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="section" id="install">
+  <div class="wrap">
+    <h2>Install in 60 seconds.</h2>
+    <p class="subtitle">Grab the signed DMG, drop into Applications, open Settings → "Install / update all" - Homebrew pulls every emulator.</p>
+    <pre><code># 1. Download
+open https://github.com/momenbasel/ConsoleMini/releases/latest
+
+# 2. Or build from source
+git clone https://github.com/momenbasel/ConsoleMini.git
+cd ConsoleMini
+bash scripts/setup.sh
+npm run dev:electron
+
+# 3. Living-room kiosk mode (auto-launch at login + no sleep)
+bash scripts/setup-kiosk.sh</code></pre>
+  </div>
+</section>
+
+<section class="section" id="faq">
+  <div class="wrap">
+    <h2>FAQ</h2>
+    <div class="faq">
+      <details><summary>Does ConsoleMini ship ROMs or BIOS files?</summary><p>No. Bring your own (legally). ConsoleMini only indexes paths and launches emulators - it never bundles or distributes copyrighted content.</p></details>
+      <details><summary>Will my DualShock / DualSense / Xbox / 8BitDo controller work?</summary><p>Yes for menu navigation via the HTML5 Gamepad API. For in-game input, each emulator handles the controller directly - pair once over Bluetooth and every emulator picks it up.</p></details>
+      <details><summary>How is this different from OpenEmu, Pegasus, or EmulationStation?</summary><p>OpenEmu is great but doesn't cover modern PlayStation. RetroArch's menu is rough on a TV. Pegasus is heavier and Linux-leaning. ConsoleMini is purpose-built for the macOS / Mac mini → TV setup with native codesign and a kiosk script.</p></details>
+      <details><summary>Does the PS4 emulator actually work?</summary><p>shadPS4 is upstream-experimental on macOS. ConsoleMini wires it up but title compatibility is thin today. Treat it as preview-grade and watch the shadPS4 project for progress.</p></details>
+      <details><summary>Is the app codesigned and notarized?</summary><p>Codesigned with a Developer ID Application certificate (Hardened Runtime on). Notarization is in progress - until that lands you may need to right-click → Open the first time.</p></details>
+      <details><summary>Mac mini intel or M-series?</summary><p>Both. We ship arm64 + x64 builds. M-series is the recommended target for PS3/PS4 emulation.</p></details>
+      <details><summary>License?</summary><p>MIT. Fork it, ship your own theme, contribute back.</p></details>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div>Made for couches. <a href="https://github.com/momenbasel/ConsoleMini">Source on GitHub</a> · <a href="https://github.com/momenbasel/ConsoleMini/releases/latest">Releases</a> · MIT</div>
+    <div style="margin-top:8px;font-size:12px;color:#5d667d">PlayStation, PS1-PS4, Nintendo, etc. are trademarks of their respective owners. Not affiliated.</div>
+  </div>
+</footer>
+
+</body>
+</html>

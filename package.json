@@ -60,7 +60,8 @@
       "title": "ConsoleMini ${version}"
     },
     "directories": {
-      "buildResources": "build"
+      "buildResources": "build",
+      "output": "release"
     }
   }
 }

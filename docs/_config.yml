@@ -1,0 +1,7 @@
+title: ConsoleMini
+description: Turn your Mac mini into a living-room PS1-PS4 + retro console. Free, open-source, controller-first big-picture launcher.
+url: https://momenbasel.github.io
+baseurl: /ConsoleMini
+theme: null
+plugins: []
+include: [robots.txt, sitemap.xml]
