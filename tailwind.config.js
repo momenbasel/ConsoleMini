@@ -4,46 +4,36 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        display: ["'Space Grotesk'", "system-ui", "sans-serif"],
-        mono: ["'JetBrains Mono'", "ui-monospace", "monospace"],
+        sans: ['"SF Pro Text"', "Inter", "system-ui", "-apple-system", "sans-serif"],
+        display: ['"SF Pro Display"', "Inter", "system-ui", "-apple-system", "sans-serif"],
+        mono: ['"JetBrains Mono"', "ui-monospace", "SFMono-Regular", "monospace"],
       },
       colors: {
         ink: {
-          950: "#05060a",
-          900: "#0a0d18",
-          800: "#0f1422",
-          700: "#161c2e",
+          950: "#07080b",
+          900: "#0a0b10",
+          850: "#0c0e14",
+          800: "#0d1017",
+          750: "#101218",
+          700: "#16181f",
+          600: "#1c1f28",
         },
-        neon: {
-          pink: "#ff3da6",
-          cyan: "#28e2ff",
-          violet: "#8a5cff",
-          lime: "#b9ff5e",
-          amber: "#ffb547",
+        accent: {
+          DEFAULT: "#c6ff3d",
+          dim: "#8fb22b",
         },
       },
-      boxShadow: {
-        glow: "0 0 40px -8px rgba(138,92,255,0.55), 0 0 80px -20px rgba(40,226,255,0.35)",
-        cardLift: "0 30px 60px -25px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.05)",
-      },
-      backgroundImage: {
-        grid: "linear-gradient(rgba(255,255,255,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.04) 1px,transparent 1px)",
-        aurora:
-          "radial-gradient(60% 40% at 20% 10%,rgba(138,92,255,0.35),transparent 60%),radial-gradient(50% 35% at 80% 20%,rgba(40,226,255,0.30),transparent 55%),radial-gradient(40% 35% at 60% 90%,rgba(255,61,166,0.25),transparent 60%)",
+      letterSpacing: {
+        tightest: "-0.04em",
       },
       keyframes: {
-        floaty: {
-          "0%,100%": { transform: "translateY(0)" },
-          "50%": { transform: "translateY(-6px)" },
-        },
-        shimmer: {
-          "0%": { backgroundPosition: "-200% 0" },
-          "100%": { backgroundPosition: "200% 0" },
+        cmpulse: {
+          "0%,100%": { opacity: "1" },
+          "50%": { opacity: "0.4" },
         },
       },
       animation: {
-        floaty: "floaty 6s ease-in-out infinite",
-        shimmer: "shimmer 6s linear infinite",
+        cmpulse: "cmpulse 1.6s ease-in-out infinite",
       },
     },
   },

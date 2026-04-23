@@ -23,8 +23,8 @@ interface UIState {
   setRomDir: (c: ConsoleId, dir: string) => void;
   controllerConnected: boolean;
   setControllerConnected: (b: boolean) => void;
-  view: "library" | "console" | "settings";
-  setView: (v: "library" | "console" | "settings") => void;
+  view: "library" | "console" | "settings" | "recent";
+  setView: (v: "library" | "console" | "settings" | "recent") => void;
 }
 
 export const useStore = create<UIState>((set) => ({

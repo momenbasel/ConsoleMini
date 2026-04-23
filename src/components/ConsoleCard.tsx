@@ -1,48 +1,82 @@
-import { motion } from "framer-motion";
-import { ArrowRight, Cpu, Calendar } from "lucide-react";
+import { useEffect, useState } from "react";
 import type { ConsoleSpec } from "@/lib/emulators";
 import { useStore } from "@/lib/store";
+import { bridge } from "@/lib/ipc";
+import { Pill } from "@/lib/ui";
 
 export function ConsoleCard({ c, count }: { c: ConsoleSpec; count: number }) {
   const setSelectedConsole = useStore((s) => s.setSelectedConsole);
+  const [ready, setReady] = useState<boolean | null>(null);
+  const experimental = c.id === "ps4";
+
+  useEffect(() => {
+    bridge.checkEmulator(c.id).then((r) => setReady(r.installed));
+  }, [c.id]);
+
   return (
-    <motion.button
+    <button
       onClick={() => setSelectedConsole(c.id)}
-      whileHover={{ y: -4 }}
-      whileTap={{ scale: 0.98 }}
-      className="group relative h-56 rounded-3xl overflow-hidden glass-strong text-left focus-ring"
-      style={{ boxShadow: "0 30px 60px -25px rgba(0,0,0,0.7)" }}
+      className="relative h-[150px] rounded-[14px] overflow-hidden text-left focus-ring"
+      style={{
+        background: "#0d1017",
+        border: "1px solid rgba(255,255,255,0.06)",
+      }}
     >
-      <div className={`absolute inset-0 bg-gradient-to-br ${c.gradient} opacity-90`} />
-      <div className="absolute inset-0 grid-bg opacity-30 mix-blend-overlay" />
-      <div className="absolute -top-20 -right-20 size-72 rounded-full blur-3xl opacity-50" style={{ background: c.accent }} />
-      <div className="absolute inset-0 bg-gradient-to-t from-ink-950/90 via-ink-950/20 to-transparent" />
+      <div
+        className="absolute inset-0"
+        style={{ background: `radial-gradient(120% 100% at 0% 0%, ${c.accent}25 0%, transparent 55%)` }}
+      />
+      <div
+        className="absolute -right-10 -bottom-10 w-40 h-40 rounded-full"
+        style={{ background: c.accent, opacity: 0.12, filter: "blur(30px)" }}
+      />
+      <div className="absolute inset-0 grid-bg" />
 
-      <div className="relative h-full p-5 flex flex-col justify-between">
-        <div className="flex items-start justify-between">
+      <div className="relative h-full p-4 flex flex-col justify-between">
+        <div className="flex justify-between items-start">
           <div>
-            <div className="font-mono text-[10px] tracking-[0.25em] uppercase text-white/50">{c.vendor}</div>
-            <div className="font-display text-3xl font-bold mt-1 leading-none">{c.shortName}</div>
-            <div className="text-white/60 text-sm mt-1">{c.name}</div>
-          </div>
-          <span className="pill border border-white/15 bg-white/5 text-white/70">
-            {count} {count === 1 ? "game" : "games"}
-          </span>
-        </div>
-
-        <div>
-          <p className="text-xs text-white/60 mb-3 line-clamp-2">{c.hero}</p>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3 text-[11px] text-white/50 font-mono">
-              <span className="inline-flex items-center gap-1"><Calendar className="size-3" />{c.year}</span>
-              <span className="inline-flex items-center gap-1"><Cpu className="size-3" />{c.emulator.name}</span>
+            <div className="font-mono text-[9px] tracking-[0.22em] text-white/45 uppercase">
+              {c.vendor} · {c.year}
             </div>
-            <span className="inline-flex items-center gap-1 text-sm text-white group-hover:gap-2 transition-all">
-              Open <ArrowRight className="size-4" />
+            <div
+              className="font-display font-bold tracking-[-0.03em] mt-1 leading-none"
+              style={{ fontSize: 28, color: c.accent }}
+            >
+              {c.shortName}
+            </div>
+            <div className="text-[12px] text-white/75 mt-1 font-medium">{c.name}</div>
+          </div>
+          {experimental ? (
+            <Pill accent="#ff3da6">EXP</Pill>
+          ) : ready ? (
+            <Pill accent="#c6ff3d" filled>
+              ● READY
+            </Pill>
+          ) : ready === false ? (
+            <Pill accent="#ff9f47">⚠ INSTALL</Pill>
+          ) : (
+            <Pill accent="#ffffff" style={{ color: "rgba(255,255,255,0.4)" }}>
+              …
+            </Pill>
+          )}
+        </div>
+        <div className="flex items-center justify-between">
+          <div className="font-mono text-[10px] text-white/45 tracking-[0.1em]">
+            {c.emulator.name} ·{" "}
+            <span className="text-white/80">
+              {count} {count === 1 ? "rom" : "roms"}
             </span>
+          </div>
+          <div
+            className="w-[26px] h-[26px] rounded-lg grid place-items-center"
+            style={{ border: `1px solid ${c.accent}40`, background: `${c.accent}12` }}
+          >
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke={c.accent} strokeWidth="1.6">
+              <path d="M3 2 L7 5 L3 8" />
+            </svg>
           </div>
         </div>
       </div>
-    </motion.button>
+    </button>
   );
 }

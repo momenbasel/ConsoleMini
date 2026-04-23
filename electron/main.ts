@@ -20,10 +20,10 @@ async function createWindow() {
     minHeight: 720,
     backgroundColor: "#05060a",
     titleBarStyle: "hiddenInset",
-    trafficLightPosition: { x: 16, y: 16 },
+    trafficLightPosition: { x: 14, y: 12 },
     show: false,
     webPreferences: {
-      preload: path.join(__dirname, "preload.js"),
+      preload: path.join(__dirname, "preload.cjs"),
       contextIsolation: true,
       nodeIntegration: false,
       sandbox: false,
@@ -104,16 +104,20 @@ ipcMain.handle("launch", async (_e, consoleId: ConsoleId, romPath: string) => {
   }
 });
 
-ipcMain.handle("installEmulators", async () => {
-  const script = path.join(app.getAppPath(), "scripts", "install-emulators.sh");
+ipcMain.handle("installEmulators", async (_e, ids?: ConsoleId[]) => {
+  const resRoot = process.resourcesPath && app.isPackaged
+    ? process.resourcesPath
+    : app.getAppPath();
+  const script = path.join(resRoot, "scripts", "install-emulators.sh");
+  const args = Array.isArray(ids) && ids.length ? ids.map((s) => JSON.stringify(s)).join(" ") : "";
   try {
-    const { stdout, stderr } = await execAsync(`bash ${JSON.stringify(script)}`, {
+    const { stdout, stderr } = await execAsync(`bash ${JSON.stringify(script)} ${args}`.trim(), {
       maxBuffer: 8 * 1024 * 1024,
       env: { ...process.env, NONINTERACTIVE: "1" },
     });
     return { ok: true, log: stdout + (stderr ? "\n[stderr]\n" + stderr : "") };
   } catch (e: any) {
-    return { ok: false, log: String(e?.stderr || e?.message || e) };
+    return { ok: false, log: String(e?.stderr || e?.stdout || e?.message || e) };
   }
 });
 
@@ -140,3 +144,74 @@ ipcMain.handle("saveConfig", async (_e, cfg: Record<string, unknown>) => {
 ipcMain.handle("openExternal", async (_e, url: string) => {
   await shell.openExternal(url);
 });
+
+ipcMain.handle("revealInFinder", async (_e, p: string) => {
+  try {
+    await fs.access(p);
+    shell.showItemInFolder(p);
+  } catch {
+    // path doesn't exist — open parent if present, else do nothing
+    const parent = path.dirname(p);
+    try {
+      await fs.access(parent);
+      shell.openPath(parent);
+    } catch {
+      /* noop */
+    }
+  }
+});
+
+// Known save-state dirs per emulator on macOS
+const SAVE_STATE_DIRS: Record<ConsoleId, string> = {
+  ps1: path.join(app.getPath("home"), "Library", "Application Support", "DuckStation", "savestates"),
+  ps2: path.join(app.getPath("home"), "Library", "Application Support", "PCSX2", "sstates"),
+  ps3: path.join(app.getPath("home"), "Library", "Application Support", "rpcs3", "savestates"),
+  ps4: path.join(app.getPath("home"), "Library", "Application Support", "shadPS4", "user", "savedata"),
+  psp: path.join(app.getPath("home"), "Library", "Application Support", "PPSSPP", "PSP", "PPSSPP_STATE"),
+  n64: path.join(app.getPath("home"), ".config", "mupen64plus", "save"),
+  snes: path.join(app.getPath("home"), "Library", "Application Support", "RetroArch", "states"),
+  nes: path.join(app.getPath("home"), "Library", "Application Support", "RetroArch", "states"),
+  gba: path.join(app.getPath("home"), "Library", "Application Support", "mGBA", "states"),
+  dreamcast: path.join(app.getPath("home"), "Library", "Application Support", "Flycast", "data"),
+};
+
+ipcMain.handle("scanSaveStates", async () => {
+  const out: Array<{
+    console: ConsoleId;
+    dir: string;
+    exists: boolean;
+    fileCount: number;
+    lastModified?: number;
+  }> = [];
+  for (const [id, dir] of Object.entries(SAVE_STATE_DIRS) as [ConsoleId, string][]) {
+    try {
+      const items = await fs.readdir(dir, { withFileTypes: true });
+      let latest = 0;
+      let count = 0;
+      for (const it of items) {
+        if (it.isFile()) {
+          count += 1;
+          try {
+            const st = await fs.stat(path.join(dir, it.name));
+            if (st.mtimeMs > latest) latest = st.mtimeMs;
+          } catch {
+            /* noop */
+          }
+        }
+      }
+      out.push({ console: id, dir, exists: true, fileCount: count, lastModified: latest || undefined });
+    } catch {
+      out.push({ console: id, dir, exists: false, fileCount: 0 });
+    }
+  }
+  return out;
+});
+
+ipcMain.handle("getAppInfo", async () => ({
+  version: app.getVersion(),
+  electron: process.versions.electron,
+  chrome: process.versions.chrome,
+  node: process.versions.node,
+  arch: process.arch,
+  platform: process.platform,
+}));

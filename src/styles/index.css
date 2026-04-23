@@ -4,6 +4,8 @@
 
 :root {
   color-scheme: dark;
+  --hairline: rgba(255, 255, 255, 0.06);
+  --hairline-strong: rgba(255, 255, 255, 0.1);
 }
 
 html,
@@ -13,44 +15,79 @@ body,
   width: 100%;
   margin: 0;
   overflow: hidden;
-  font-family: "Space Grotesk", system-ui, sans-serif;
-  background: #05060a;
+  font-family: "SF Pro Text", Inter, -apple-system, system-ui, sans-serif;
+  background: #07080b;
+  color: white;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.08);
-  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 99px;
 }
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.18);
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+@layer utilities {
+  .drag {
+    -webkit-app-region: drag;
+  }
+  .no-drag {
+    -webkit-app-region: no-drag;
+  }
+  .scanlines {
+    background-image: repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.04) 0 1px, transparent 1px 3px);
+  }
+  .scanlines-strong {
+    background-image: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.1) 0 2px, transparent 2px 4px);
+  }
+  .grid-bg {
+    background-image: linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
 }
 
 @layer components {
-  .glass {
-    @apply bg-white/[0.04] backdrop-blur-xl border border-white/10;
-  }
-  .glass-strong {
-    @apply bg-white/[0.07] backdrop-blur-2xl border border-white/15;
-  }
   .pill {
-    @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] uppercase tracking-widest font-mono;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    height: 20px;
+    padding: 0 8px;
+    border-radius: 999px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 9.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-weight: 500;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.7);
+    white-space: nowrap;
+  }
+  .keycap {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 9.5px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 4px;
+    padding: 1px 5px;
+    box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.3);
+    color: rgba(255, 255, 255, 0.7);
+    letter-spacing: 0.08em;
   }
   .focus-ring {
-    @apply outline-none ring-0 focus-visible:ring-2 focus-visible:ring-neon-cyan/70;
+    outline: none;
   }
-  .grid-bg {
-    background-image: linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
-    background-size: 48px 48px;
-  }
-  .text-gradient {
-    background: linear-gradient(120deg, #28e2ff 0%, #8a5cff 50%, #ff3da6 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
+  .focus-ring:focus-visible {
+    outline: 1px solid rgba(198, 255, 61, 0.6);
+    outline-offset: 1px;
   }
 }

@@ -1,14 +1,14 @@
 {
   "name": "console-mini",
   "private": true,
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Turn a Mac mini into a living-room retro/PS console with a beautiful big-picture launcher.",
   "main": "dist-electron/main.js",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "dev:electron": "concurrently -k \"vite\" \"wait-on http://localhost:5173 && tsc -p electron && electron .\"",
-    "build": "tsc -b && vite build && tsc -p electron",
+    "dev:electron": "concurrently -k \"vite\" \"wait-on http://localhost:5173 && tsc -p electron && cp electron/preload.cjs dist-electron/preload.cjs && electron .\"",
+    "build": "tsc -b && vite build && tsc -p electron && cp electron/preload.cjs dist-electron/preload.cjs",
     "start": "electron .",
     "package": "npm run build && electron-builder --mac",
     "lint": "eslint .",

@@ -30,6 +30,14 @@
   <a href="#faq"><b>FAQ</b></a>
 </p>
 
+## Demo
+
+<p align="center">
+  <video src="https://github.com/momenbasel/ConsoleMini/raw/main/docs/demo.mp4" controls width="100%"></video>
+</p>
+
+<sub>If the inline player doesn't load in your Markdown viewer, grab the clip directly: [docs/demo.mp4](docs/demo.mp4).</sub>
+
 ## Screenshots
 
 <p align="center">
@@ -81,15 +89,15 @@ brew tap momenbasel/tap
 brew install --cask consolemini
 ```
 
-Upgrade later with `brew upgrade --cask consolemini`.
+The cask pulls the signed + notarized `.dmg` from the GitHub release, verifies the SHA-256, and drops `ConsoleMini.app` in `/Applications`. Upgrade later with `brew upgrade --cask consolemini`.
 
-### From release
+### From release (direct)
 
 ```bash
 open https://github.com/momenbasel/ConsoleMini/releases/latest
 ```
 
-Drop `ConsoleMini.app` into `/Applications` and launch. Releases are signed with an Apple Developer ID and notarized.
+Drop `ConsoleMini.app` into `/Applications` and launch. Releases are signed with an Apple Developer ID and notarized via CI on tag push.
 
 ### From source
 
@@ -126,6 +134,25 @@ Any controller exposed through the **HTML5 Gamepad API** works for menu navigati
 
 Source: [`src/lib/gamepad.ts`](src/lib/gamepad.ts).
 
+## Save states
+
+ConsoleMini **does not re-implement save states** — it delegates to each emulator's native save-state system, which is already robust, well-tested, and survives app/emulator updates. ConsoleMini simply launches the emulator with your ROM and gets out of the way, then indexes the state vaults so you can see (and reveal in Finder) what's on disk.
+
+| Console | Emulator | Save / Load hotkey | Vault path |
+|---|---|---|---|
+| PS1 | DuckStation | `F1` / `F3` | `~/Library/Application Support/DuckStation/savestates/` |
+| PS2 | PCSX2 | `F1` / `F3` | `~/Library/Application Support/PCSX2/sstates/` |
+| PS3 | RPCS3 | `Ctrl+S` / `Ctrl+E` | `~/Library/Application Support/rpcs3/savestates/` |
+| PSP | PPSSPP | `F1` / `F2` | `~/Library/Application Support/PPSSPP/PSP/PPSSPP_STATE/` |
+| N64 | Mupen64Plus | `F5` / `F7` | `~/.config/mupen64plus/save/` |
+| SNES / NES | RetroArch | `F2` / `F4` | `~/Library/Application Support/RetroArch/states/` |
+| GBA | mGBA | `F1` / `F4` | `~/Library/Application Support/mGBA/states/` |
+| Dreamcast | Flycast | in-game menu | `~/Library/Application Support/Flycast/data/` |
+
+The **Settings → Save states** panel inside the app lists every vault live, counts files, shows last-modified time, and has a per-row **Reveal** button that opens the vault in Finder. Nothing is ever touched by ConsoleMini — this is a read-only dashboard over your emulators' own save data.
+
+> Tip: pair this with iCloud Drive by `ln -s ~/iCloud.../Saves/mgba ~/Library/Application\ Support/mGBA/states` and every save syncs between Macs.
+
 ## Project layout
 
 ```
@@ -154,7 +181,9 @@ ConsoleMini/
 
 **Does the PS4 emulator actually work?** shadPS4 is upstream-experimental on macOS. ConsoleMini wires it up but title compatibility is thin today.
 
-**Codesign / notarization?** Codesigned with Developer ID Application + Hardened Runtime. Notarization in flight - until then right-click → Open on first launch.
+**Codesign / notarization?** Signed with a Developer ID Application identity + Hardened Runtime and notarized by Apple via GitHub Actions (triggered on `v*` tags). If you pull a pre-notarized build (e.g. local build), strip the quarantine bit with `xattr -dr com.apple.quarantine /Applications/ConsoleMini.app`.
+
+**Save states?** Every emulator's native save-state system works out of the box — ConsoleMini only launches the emulator with your ROM, then indexes the vault. See [Save states](#save-states).
 
 **Mac mini Intel or M-series?** Both. arm64 + x64 builds shipped. M-series recommended for PS3 / PS4.
 
