@@ -33,10 +33,8 @@
 ## Demo
 
 <p align="center">
-  <video src="https://github.com/momenbasel/ConsoleMini/raw/main/docs/demo.mp4" controls width="100%"></video>
+  <img src="docs/demo.gif" alt="ConsoleMini in action - browsing systems, picking a GBA game, launching mGBA" width="100%"/>
 </p>
-
-<sub>If the inline player doesn't load in your Markdown viewer, grab the clip directly: [docs/demo.mp4](docs/demo.mp4).</sub>
 
 ## Screenshots
 
@@ -167,7 +165,7 @@ ConsoleMini/
   config/consoles.json   # runtime overrides for binary paths/args
   assets/                # icon.svg, banner.svg
   build/                 # generated icon.icns, entitlements
-  docs/                  # GitHub Pages landing site (SEO-tuned)
+  docs/                  # GitHub Pages landing site
   marketing/             # launch copy for HN, Reddit, X, Product Hunt
 ```
 
