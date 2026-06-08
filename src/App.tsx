@@ -14,7 +14,12 @@ import { startGamepadLoop } from "./lib/gamepad";
 import { bridge } from "./lib/ipc";
 
 export default function App() {
-  const { selectedConsole, view, games, setControllerConnected, setSelectedConsole, setView } = useStore();
+  const { selectedConsole, view, games, setControllerConnected, setSelectedConsole, setView, hydrate } = useStore();
+
+  // Restore persisted ROM directories (and their games) on launch.
+  useEffect(() => {
+    hydrate();
+  }, [hydrate]);
 
   useEffect(() => {
     const stop = startGamepadLoop(
