@@ -26,7 +26,7 @@ async function createWindow() {
       preload: path.join(__dirname, "preload.cjs"),
       contextIsolation: true,
       nodeIntegration: false,
-      sandbox: false,
+      sandbox: true,
     },
   });
 
@@ -54,32 +54,61 @@ function findConsole(id: ConsoleId) {
   return c;
 }
 
-ipcMain.handle("pickRomDir", async () => {
-  const r = await dialog.showOpenDialog(win!, { properties: ["openDirectory"] });
+ipcMain.handle("pickRomDir", async (_e, consoleId: ConsoleId) => {
+  const c = CONSOLES.find((x) => x.id === consoleId);
+  const r = await dialog.showOpenDialog(win!, {
+    properties: ["openDirectory"],
+    title: c ? `Select ${c.id.toUpperCase()} ROM folder` : "Select ROM folder",
+  });
   return r.canceled ? null : r.filePaths[0];
 });
 
+type ScanResult = { id: string; title: string; path: string; size: number };
+
+// Coalesce duplicate concurrent scans of the same dir so a buggy or hostile
+// renderer cannot pile up recursive directory walks and starve the main process.
+const scansInFlight = new Map<string, Promise<ScanResult[]>>();
+
 ipcMain.handle("scanRoms", async (_e, consoleId: ConsoleId, dir: string) => {
+  const key = `${consoleId}\u0000${dir}`;
+  const existing = scansInFlight.get(key);
+  if (existing) return existing;
+
   const c = findConsole(consoleId);
-  const out: { id: string; title: string; path: string }[] = [];
-  async function walk(d: string) {
-    const items = await fs.readdir(d, { withFileTypes: true });
-    for (const it of items) {
-      const p = path.join(d, it.name);
-      if (it.isDirectory()) await walk(p);
-      else if (c.romExt.some((e) => it.name.toLowerCase().endsWith(e))) {
-        const base = path.basename(it.name, path.extname(it.name));
-        out.push({ id: `${consoleId}:${p}`, title: base.replace(/[._-]+/g, " ").trim(), path: p });
+  const run = (async (): Promise<ScanResult[]> => {
+    const out: ScanResult[] = [];
+    async function walk(d: string) {
+      const items = await fs.readdir(d, { withFileTypes: true });
+      for (const it of items) {
+        const p = path.join(d, it.name);
+        if (it.isDirectory()) await walk(p);
+        else if (c.romExt.some((e) => it.name.toLowerCase().endsWith(e))) {
+          let size = 0;
+          try {
+            size = (await fs.stat(p)).size;
+          } catch {
+            /* unreadable file - report it with size 0 */
+          }
+          const base = path.basename(it.name, path.extname(it.name));
+          out.push({ id: `${consoleId}:${p}`, title: base.replace(/[._-]+/g, " ").trim(), path: p, size });
+        }
       }
     }
-  }
+    try {
+      await walk(dir);
+    } catch (e) {
+      console.error("scan failed", e);
+    }
+    out.sort((a, b) => a.title.localeCompare(b.title));
+    return out;
+  })();
+
+  scansInFlight.set(key, run);
   try {
-    await walk(dir);
-  } catch (e) {
-    console.error("scan failed", e);
+    return await run;
+  } finally {
+    scansInFlight.delete(key);
   }
-  out.sort((a, b) => a.title.localeCompare(b.title));
-  return out;
 });
 
 ipcMain.handle("checkEmulator", async (_e, consoleId: ConsoleId) => {
@@ -97,6 +126,10 @@ ipcMain.handle("launch", async (_e, consoleId: ConsoleId, romPath: string) => {
   try {
     const args = c.emulator.args ? c.emulator.args(romPath) : [romPath];
     const child = spawn(c.emulator.binary, args, { detached: true, stdio: "ignore" });
+    // spawn() does not throw synchronously for a missing binary - the failure
+    // arrives as an async "error" event. Without a handler it crashes the main
+    // process, so attach one before detaching.
+    child.on("error", (err) => console.error("emulator launch failed:", c.emulator.binary, err));
     child.unref();
     return { ok: true };
   } catch (e: any) {
@@ -132,13 +165,29 @@ ipcMain.handle("loadConfig", async () => {
   try {
     const raw = await fs.readFile(CONFIG_PATH, "utf-8");
     return JSON.parse(raw);
-  } catch {
+  } catch (e: any) {
+    // A missing file is the normal first-run case; anything else (e.g. corrupt
+    // JSON) is worth surfacing so it isn't silently swallowed.
+    if (e?.code !== "ENOENT") console.warn("loadConfig: could not read config", e);
     return {};
   }
 });
 
 ipcMain.handle("saveConfig", async (_e, cfg: Record<string, unknown>) => {
-  await fs.writeFile(CONFIG_PATH, JSON.stringify(cfg, null, 2), "utf-8");
+  // Write atomically (tmp + rename) so a crash mid-write can't truncate the
+  // config and lose the user's ROM directories.
+  const tmp = `${CONFIG_PATH}.${process.pid}.tmp`;
+  try {
+    await fs.writeFile(tmp, JSON.stringify(cfg, null, 2), "utf-8");
+    await fs.rename(tmp, CONFIG_PATH);
+  } catch (e) {
+    try {
+      await fs.unlink(tmp);
+    } catch {
+      /* tmp may not exist */
+    }
+    throw e;
+  }
 });
 
 ipcMain.handle("openExternal", async (_e, url: string) => {
@@ -175,14 +224,16 @@ const SAVE_STATE_DIRS: Record<ConsoleId, string> = {
   dreamcast: path.join(app.getPath("home"), "Library", "Application Support", "Flycast", "data"),
 };
 
-ipcMain.handle("scanSaveStates", async () => {
-  const out: Array<{
-    console: ConsoleId;
-    dir: string;
-    exists: boolean;
-    fileCount: number;
-    lastModified?: number;
-  }> = [];
+type SaveStateScan = {
+  console: ConsoleId;
+  dir: string;
+  exists: boolean;
+  fileCount: number;
+  lastModified?: number;
+};
+
+async function scanSaveStatesImpl(): Promise<SaveStateScan[]> {
+  const out: SaveStateScan[] = [];
   for (const [id, dir] of Object.entries(SAVE_STATE_DIRS) as [ConsoleId, string][]) {
     try {
       const items = await fs.readdir(dir, { withFileTypes: true });
@@ -205,6 +256,18 @@ ipcMain.handle("scanSaveStates", async () => {
     }
   }
   return out;
+}
+
+// Single-flight so repeated rapid Rescan clicks reuse one disk pass.
+let saveStatesInFlight: Promise<SaveStateScan[]> | null = null;
+ipcMain.handle("scanSaveStates", async () => {
+  if (saveStatesInFlight) return saveStatesInFlight;
+  saveStatesInFlight = scanSaveStatesImpl();
+  try {
+    return await saveStatesInFlight;
+  } finally {
+    saveStatesInFlight = null;
+  }
 });
 
 ipcMain.handle("getAppInfo", async () => ({

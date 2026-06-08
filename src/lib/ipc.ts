@@ -11,7 +11,7 @@ export interface SaveStateEntry {
 export interface BridgeAPI {
   pickRomDir: (consoleId: ConsoleId) => Promise<string | null>;
   scanRoms: (consoleId: ConsoleId, dir: string) => Promise<
-    { id: string; title: string; path: string }[]
+    { id: string; title: string; path: string; size: number }[]
   >;
   launch: (consoleId: ConsoleId, romPath: string) => Promise<{ ok: boolean; error?: string }>;
   checkEmulator: (consoleId: ConsoleId) => Promise<{ installed: boolean; binary: string }>;

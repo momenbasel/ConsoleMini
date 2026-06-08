@@ -6,7 +6,7 @@ export function Sidebar() {
   const { selectedConsole, setSelectedConsole, view, setView, controllerConnected, games } = useStore();
 
   const systems = CONSOLES;
-  const totalGames = games.length;
+  const recentCount = games.filter((g) => g.lastPlayed != null).length;
 
   return (
     <aside
@@ -64,7 +64,7 @@ export function Sidebar() {
         />
         <NavItem
           label="Recent"
-          count={Math.min(totalGames, 99)}
+          count={Math.min(recentCount, 99)}
           active={view === "recent"}
           onClick={() => {
             setSelectedConsole("all");

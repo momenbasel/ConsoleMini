@@ -7,7 +7,13 @@ export interface Game {
   console: ConsoleId;
   title: string;
   path: string;
+  size?: number;
   cover?: string;
+  lastPlayed?: number;
+  playCount?: number;
+}
+
+interface GameMeta {
   lastPlayed?: number;
   playCount?: number;
 }
@@ -23,17 +29,25 @@ interface UIState {
   romDirs: Record<ConsoleId, string | undefined>;
   setRomDir: (c: ConsoleId, dir: string) => void;
   hydrate: () => Promise<void>;
+  markPlayed: (id: string) => void;
   controllerConnected: boolean;
   setControllerConnected: (b: boolean) => void;
   view: "library" | "console" | "settings" | "recent";
   setView: (v: "library" | "console" | "settings" | "recent") => void;
 }
 
-// Persist ROM directories to disk via the main process (console-mini.json).
-// Fire-and-forget: a failed write must never block the UI state update.
-async function persistRomDirs(romDirs: Record<ConsoleId, string | undefined>) {
+// Persist ROM directories and per-game metadata to disk via the main process
+// (console-mini.json). Fire-and-forget: a failed write must never block the
+// UI state update.
+async function persistConfig(romDirs: Record<ConsoleId, string | undefined>, games: Game[]) {
+  const meta: Record<string, GameMeta> = {};
+  for (const g of games) {
+    if (g.lastPlayed != null || g.playCount != null) {
+      meta[g.id] = { lastPlayed: g.lastPlayed, playCount: g.playCount };
+    }
+  }
   try {
-    await bridge.saveConfig({ romDirs });
+    await bridge.saveConfig({ romDirs, meta });
   } catch (e) {
     console.error("saveConfig failed", e);
   }
@@ -51,7 +65,7 @@ export const useStore = create<UIState>((set, get) => ({
   setRomDir: (c, dir) => {
     const romDirs = { ...get().romDirs, [c]: dir };
     set({ romDirs });
-    void persistRomDirs(romDirs);
+    void persistConfig(romDirs, get().games);
   },
   hydrate: async () => {
     let cfg: Record<string, unknown> = {};
@@ -61,7 +75,7 @@ export const useStore = create<UIState>((set, get) => ({
       console.error("loadConfig failed", e);
     }
     const saved = (cfg.romDirs as Record<string, string | undefined>) || {};
-    // Only keep entries for known consoles — a hand-edited or corrupted config
+    // Only keep entries for known consoles - a hand-edited or corrupted config
     // could carry bogus IDs that would crash scanRoms in the main process.
     const dirs = Object.entries(saved).filter(
       ([id, dir]) => !!dir && id in CONSOLE_BY_ID
@@ -69,13 +83,23 @@ export const useStore = create<UIState>((set, get) => ({
     const romDirs = Object.fromEntries(dirs) as Record<ConsoleId, string | undefined>;
     set({ romDirs });
 
+    const meta = (cfg.meta as Record<string, GameMeta>) || {};
+
     // Repopulate the game library from the restored directories so the user
-    // sees their ROMs immediately on launch instead of an empty grid.
+    // sees their ROMs immediately on launch instead of an empty grid, and
+    // re-apply persisted play metadata (lastPlayed / playCount) by game id.
     const restored: Game[] = [];
     for (const [consoleId, dir] of dirs) {
       try {
         const found = await bridge.scanRoms(consoleId, dir);
-        restored.push(...found.map<Game>((f) => ({ ...f, console: consoleId })));
+        restored.push(
+          ...found.map<Game>((f) => ({
+            ...f,
+            console: consoleId,
+            lastPlayed: meta[f.id]?.lastPlayed,
+            playCount: meta[f.id]?.playCount,
+          }))
+        );
       } catch (e) {
         console.error("rescan failed for", consoleId, e);
       }
@@ -89,6 +113,13 @@ export const useStore = create<UIState>((set, get) => ({
         games: [...s.games.filter((g) => !restoredConsoles.has(g.console)), ...restored],
       }));
     }
+  },
+  markPlayed: (id) => {
+    const games = get().games.map((g) =>
+      g.id === id ? { ...g, lastPlayed: Date.now(), playCount: (g.playCount ?? 0) + 1 } : g
+    );
+    set({ games });
+    void persistConfig(get().romDirs, games);
   },
   controllerConnected: false,
   setControllerConnected: (b) => set({ controllerConnected: b }),

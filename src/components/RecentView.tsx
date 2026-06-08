@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { Play } from "lucide-react";
-import { CONSOLE_BY_ID } from "@/lib/emulators";
+import { CONSOLE_BY_ID, CONSOLES } from "@/lib/emulators";
 import { useStore, type Game } from "@/lib/store";
 import { bridge } from "@/lib/ipc";
 import { Btn, Pill, paletteFromTitle } from "@/lib/ui";
@@ -9,8 +9,8 @@ export function RecentView() {
   const { games, search, setSelectedConsole } = useStore();
 
   const list = useMemo(() => {
-    const filtered = games.filter((g) =>
-      g.title.toLowerCase().includes(search.toLowerCase())
+    const filtered = games.filter(
+      (g) => g.lastPlayed != null && g.title.toLowerCase().includes(search.toLowerCase())
     );
     return [...filtered].sort((a, b) => (b.lastPlayed ?? 0) - (a.lastPlayed ?? 0));
   }, [games, search]);
@@ -28,7 +28,7 @@ export function RecentView() {
             Indexed ROMs across all systems will show up here, most recent first.
           </p>
           <div className="mt-5 flex justify-center">
-            <Btn variant="primary" onClick={() => setSelectedConsole("gba")}>
+            <Btn variant="primary" onClick={() => setSelectedConsole(CONSOLES[0].id)}>
               Open a system
             </Btn>
           </div>
@@ -83,6 +83,7 @@ function RecentTile({ g }: { g: Game }) {
       onClick={async () => {
         setBusy(true);
         await bridge.launch(g.console, g.path);
+        useStore.getState().markPlayed(g.id);
         setBusy(false);
       }}
       className="text-left flex flex-col gap-2 focus-ring"

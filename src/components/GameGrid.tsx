@@ -20,8 +20,18 @@ export function GameGrid({ consoleId }: { consoleId: ConsoleId }) {
   const scanDir = async (dir: string) => {
     setScanning(true);
     const found = await bridge.scanRoms(consoleId, dir);
+    // Carry play metadata over a rescan so re-indexing doesn't reset history.
+    const prev = new Map(games.filter((g) => g.console === consoleId).map((g) => [g.id, g]));
     const rest = games.filter((g) => g.console !== consoleId);
-    setGames([...rest, ...found.map<Game>((f) => ({ ...f, console: consoleId }))]);
+    setGames([
+      ...rest,
+      ...found.map<Game>((f) => ({
+        ...f,
+        console: consoleId,
+        lastPlayed: prev.get(f.id)?.lastPlayed,
+        playCount: prev.get(f.id)?.playCount,
+      })),
+    ]);
     setScanning(false);
   };
 
@@ -43,10 +53,12 @@ export function GameGrid({ consoleId }: { consoleId: ConsoleId }) {
       (g) => g.console === consoleId && g.title.toLowerCase().includes(search.toLowerCase())
     );
     if (sort === "az") filtered.sort((a, b) => a.title.localeCompare(b.title));
+    else if (sort === "size") filtered.sort((a, b) => (b.size ?? 0) - (a.size ?? 0));
+    else filtered.sort((a, b) => (b.lastPlayed ?? 0) - (a.lastPlayed ?? 0));
     return filtered;
   }, [games, consoleId, search, sort]);
 
-  const totalMb = list.length * 8;
+  const totalMb = Math.round(list.reduce((sum, g) => sum + (g.size ?? 0), 0) / (1024 * 1024));
 
   return (
     <div>
@@ -262,6 +274,7 @@ function GameCard({ g, accent, highlight }: { g: Game; accent: string; highlight
       onClick={async () => {
         setBusy(true);
         await bridge.launch(g.console, g.path);
+        useStore.getState().markPlayed(g.id);
         setBusy(false);
       }}
       className="text-left flex flex-col gap-2.5 focus-ring"
@@ -349,6 +362,7 @@ function GameRow({ g, accent }: { g: Game; accent: string }) {
         onClick={async () => {
           setBusy(true);
           await bridge.launch(g.console, g.path);
+          useStore.getState().markPlayed(g.id);
           setBusy(false);
         }}
       >

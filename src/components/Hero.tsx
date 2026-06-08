@@ -20,7 +20,7 @@ export function Hero() {
 
   const c = CONSOLE_BY_ID[last.console];
   const palette = paletteFromTitle(last.title);
-  const pct = Math.min(99, Math.max(3, (last.playCount ?? 3) * 6)); // deterministic fake progress
+  const pct = Math.min(99, Math.max(3, (last.playCount ?? 0) * 12)); // rough familiarity from play count
   const initials = last.title
     .split(/\s+/)
     .slice(0, 2)
@@ -111,7 +111,10 @@ export function Hero() {
               variant="primary"
               size="lg"
               accent="#c6ff3d"
-              onClick={() => bridge.launch(last.console, last.path)}
+              onClick={async () => {
+                await bridge.launch(last.console, last.path);
+                useStore.getState().markPlayed(last.id);
+              }}
             >
               <svg width="11" height="11" viewBox="0 0 10 10">
                 <path d="M1 1 L9 5 L1 9 Z" fill="currentColor" />
