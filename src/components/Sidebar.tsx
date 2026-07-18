@@ -1,37 +1,46 @@
+import { motion } from "framer-motion";
+import { LibraryBig, History, Settings2, Maximize2, Power } from "lucide-react";
 import { CONSOLES, type ConsoleId } from "@/lib/emulators";
 import { useStore } from "@/lib/store";
 import { bridge } from "@/lib/ipc";
+import { GlowDot } from "@/lib/ui";
+
+const SPRING = { type: "spring", stiffness: 480, damping: 38 } as const;
 
 export function Sidebar() {
   const { selectedConsole, setSelectedConsole, view, setView, controllerConnected, games } = useStore();
 
-  const systems = CONSOLES;
   const recentCount = games.filter((g) => g.lastPlayed != null).length;
 
   return (
     <aside
-      className="w-[232px] flex-shrink-0 flex flex-col no-drag"
+      className="w-[248px] flex-shrink-0 flex flex-col no-drag relative"
       style={{
-        background: "linear-gradient(180deg, #0c0e13 0%, #090a0f 100%)",
+        background: "linear-gradient(180deg, rgba(255,255,255,0.018) 0%, rgba(255,255,255,0.006) 100%)",
         borderRight: "1px solid rgba(255,255,255,0.05)",
       }}
     >
       {/* Brand */}
-      <div className="px-4 pt-4 pb-[14px] flex items-center gap-2.5">
-        <img
-          src="./icon.svg"
-          alt=""
-          className="w-[34px] h-[34px] rounded-[9px] flex-shrink-0 border border-white/10"
-          style={{ boxShadow: "0 4px 14px -6px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.05)" }}
-          draggable={false}
-        />
+      <div className="px-4 pt-4 pb-4 flex items-center gap-3">
+        <div className="relative">
+          <img
+            src="./icon.svg"
+            alt=""
+            className="w-9 h-9 rounded-[10px] flex-shrink-0 border border-white/10"
+            style={{ boxShadow: "0 6px 18px -6px rgba(0,0,0,0.9), 0 0 20px rgba(138,92,255,0.15)" }}
+            draggable={false}
+          />
+          <span
+            className="absolute -inset-1 rounded-[13px] pointer-events-none"
+            style={{ border: "1px solid rgba(255,255,255,0.05)" }}
+          />
+        </div>
         <div>
-          <div className="flex items-baseline gap-0.5 font-display tracking-[-0.02em]">
-            <span className="text-[15px] font-bold">Console</span>
-            <span className="text-[15px] font-light text-white/55">Mini</span>
-            <span className="text-accent text-[15px] font-bold">.</span>
+          <div className="flex items-baseline gap-[3px] font-display stretch-wide tracking-[0.01em]">
+            <span className="text-[15px] font-extrabold">CONSOLE</span>
+            <span className="text-[15px] font-light text-white/50">MINI</span>
           </div>
-          <div className="font-mono text-[9px] text-white/35 tracking-[0.18em] mt-[2px]">
+          <div className="font-mono text-[8.5px] text-white/35 tracking-[0.22em] mt-[3px]">
             V0.1 · MAC MINI EDITION
           </div>
         </div>
@@ -43,24 +52,7 @@ export function Sidebar() {
           label="Library"
           active={view === "library"}
           onClick={() => setView("library")}
-          icon={
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4">
-              <rect x="2.5" y="2.5" width="2.5" height="11" rx="0.5" />
-              <rect x="6.5" y="2.5" width="2.5" height="11" rx="0.5" />
-              <path d="M11.5 4 l2 0.6 -1.8 9.3 -2-0.5z" />
-            </svg>
-          }
-        />
-        <NavItem
-          label="Settings"
-          active={view === "settings"}
-          onClick={() => setView("settings")}
-          icon={
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4">
-              <circle cx="8" cy="8" r="2.3" />
-              <path d="M8 1.5v2 M8 12.5v2 M1.5 8h2 M12.5 8h2 M3.5 3.5l1.4 1.4 M11.1 11.1l1.4 1.4 M3.5 12.5l1.4-1.4 M11.1 4.9l1.4-1.4" />
-            </svg>
-          }
+          icon={<LibraryBig className="size-[15px]" />}
         />
         <NavItem
           label="Recent"
@@ -70,21 +62,22 @@ export function Sidebar() {
             setSelectedConsole("all");
             setView("recent");
           }}
-          icon={
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4">
-              <circle cx="8" cy="8" r="5.5" />
-              <path d="M8 4.5V8l2.5 1.5" />
-            </svg>
-          }
+          icon={<History className="size-[15px]" />}
+        />
+        <NavItem
+          label="Settings"
+          active={view === "settings"}
+          onClick={() => setView("settings")}
+          icon={<Settings2 className="size-[15px]" />}
         />
       </div>
 
-      <div className="px-4 pt-[14px] pb-2 flex items-center justify-between font-mono text-[9px] tracking-[0.22em] text-white/32">
+      <div className="px-4 pt-5 pb-2 flex items-center justify-between font-mono text-[9px] tracking-[0.24em] text-white/35">
         <span>SYSTEMS</span>
-        <span className="text-white/25">{systems.length}</span>
+        <span className="text-white/25">{CONSOLES.length}</span>
       </div>
 
-      <div className="flex-1 overflow-y-auto px-[10px] pb-2.5">
+      <div className="flex-1 overflow-y-auto no-scrollbar px-[10px] pb-2.5">
         <ConsoleRow
           id="all"
           short="·"
@@ -96,7 +89,7 @@ export function Sidebar() {
             setView("library");
           }}
         />
-        {systems.map((c) => {
+        {CONSOLES.map((c) => {
           const installedCount = games.filter((g) => g.console === c.id).length;
           return (
             <ConsoleRow
@@ -119,38 +112,29 @@ export function Sidebar() {
 
       {/* Footer */}
       <div
-        className="px-[14px] py-2.5 flex items-center justify-between font-mono text-[10px] text-white/45"
+        className="px-3.5 py-3 flex items-center justify-between"
         style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}
       >
-        <div className="flex items-center gap-1.5">
-          <span
-            className="w-1.5 h-1.5 rounded-full"
-            style={{
-              background: controllerConnected ? "#c6ff3d" : "rgba(255,255,255,0.25)",
-              boxShadow: controllerConnected ? "0 0 8px #c6ff3d" : undefined,
-            }}
-          />
-          <span>{controllerConnected ? "Controller" : "No pad"}</span>
+        <div className="flex items-center gap-2 font-mono text-[9.5px] tracking-[0.1em] uppercase">
+          <GlowDot color={controllerConnected ? "#d3fd50" : "rgba(255,255,255,0.22)"} pulse={controllerConnected} />
+          <span className={controllerConnected ? "text-white/75" : "text-white/40"}>
+            {controllerConnected ? "Controller" : "No pad"}
+          </span>
         </div>
         <div className="flex gap-1">
           <button
             onClick={() => bridge.toggleFullscreen()}
-            className="w-[22px] h-[22px] rounded-md grid place-items-center text-white/50 hover:text-white hover:bg-white/5 focus-ring no-drag"
-            title="Fullscreen"
+            className="w-6 h-6 rounded-md grid place-items-center text-white/45 hover:text-white hover:bg-white/[0.06] focus-ring no-drag transition-colors"
+            title="Fullscreen (F11)"
           >
-            <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4">
-              <path d="M10 2h4v4 M6 14H2v-4 M14 2l-5 5 M2 14l5-5" />
-            </svg>
+            <Maximize2 className="size-3" />
           </button>
           <button
             onClick={() => bridge.exitApp()}
-            className="w-[22px] h-[22px] rounded-md grid place-items-center text-white/50 hover:text-white hover:bg-white/5 focus-ring no-drag"
+            className="w-6 h-6 rounded-md grid place-items-center text-white/45 hover:text-[#ff6b6b] hover:bg-white/[0.06] focus-ring no-drag transition-colors"
             title="Quit"
           >
-            <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4">
-              <path d="M8 2v6" />
-              <path d="M4.5 5A5 5 0 1 0 11.5 5" />
-            </svg>
+            <Power className="size-3" />
           </button>
         </div>
       </div>
@@ -172,27 +156,38 @@ function NavItem({
   onClick?: () => void;
 }) {
   return (
-    <button
+    <motion.button
       onClick={onClick}
+      data-focusable
+      whileHover={{ x: 2 }}
+      whileTap={{ scale: 0.98 }}
+      transition={SPRING}
       className={
-        "w-full flex items-center gap-2.5 px-2.5 py-[7px] rounded-lg mb-0.5 text-[13px] relative focus-ring " +
-        (active ? "text-white" : "text-white/60 hover:text-white hover:bg-white/[0.03]")
+        "w-full flex items-center gap-2.5 px-2.5 py-2 rounded-[3px] mb-[3px] text-[13px] relative focus-ring overflow-hidden " +
+        (active ? "text-white" : "text-white/55 hover:text-white")
       }
-      style={{ background: active ? "rgba(255,255,255,0.06)" : undefined, fontWeight: active ? 500 : 400 }}
+      style={{ fontWeight: active ? 550 : 400 }}
     >
+      <span className="spot-fill" aria-hidden />
       {active && (
-        <span
-          aria-hidden
-          className="absolute rounded-sm"
-          style={{ left: -10, top: 8, bottom: 8, width: 2, background: "#c6ff3d" }}
+        <motion.span
+          layoutId="nav-active"
+          transition={SPRING}
+          className="absolute inset-0"
+          style={{
+            background: "rgba(255,255,255,0.065)",
+            border: "1px solid rgba(255,255,255,0.08)",
+          }}
         />
       )}
-      <span className={active ? "text-white" : "text-white/70"}>{icon}</span>
-      <span>{label}</span>
-      {count != null && (
-        <span className="ml-auto font-mono text-[10px] text-white/35">{count}</span>
+      <span className={"relative z-10 spot-target " + (active ? "text-[#d3fd50]" : "text-white/60")}>{icon}</span>
+      <span className="relative z-10 spot-target">{label}</span>
+      {count != null && count > 0 && (
+        <span className="relative z-10 ml-auto font-mono text-[9.5px] text-white/40 px-1.5 py-[1px] spot-dim">
+          {count}
+        </span>
       )}
-    </button>
+    </motion.button>
   );
 }
 
@@ -216,42 +211,44 @@ function ConsoleRow({
   onClick?: () => void;
 }) {
   return (
-    <button
+    <motion.button
       onClick={onClick}
+      data-focusable
+      whileHover={{ x: 2 }}
+      whileTap={{ scale: 0.98 }}
+      transition={SPRING}
       className={
-        "w-full flex items-center gap-2.5 px-2.5 py-[6px] rounded-lg mb-[1px] text-[12.5px] relative focus-ring " +
-        (active ? "text-white" : "text-white/55 hover:text-white hover:bg-white/[0.025]")
+        "w-full flex items-center gap-2.5 px-2.5 py-[7px] rounded-[3px] mb-[2px] text-[12.5px] relative focus-ring overflow-hidden " +
+        (active ? "text-white" : "text-white/50 hover:text-white/90")
       }
-      style={{ background: active ? "rgba(255,255,255,0.06)" : undefined }}
     >
+      <span className="spot-fill" aria-hidden />
       {active && (
-        <span
-          aria-hidden
-          className="absolute rounded-sm"
+        <motion.span
+          layoutId="console-active"
+          transition={SPRING}
+          className="absolute inset-0"
           style={{
-            left: -10,
-            top: 6,
-            bottom: 6,
-            width: 2,
-            background: accent,
-            boxShadow: `0 0 8px ${accent}`,
+            background: `linear-gradient(90deg, ${accent}14 0%, rgba(255,255,255,0.04) 60%)`,
+            border: `1px solid ${accent}30`,
           }}
         />
       )}
-      <span
-        className="w-1.5 h-1.5 rounded-full flex-shrink-0"
-        style={{ background: accent, boxShadow: `0 0 6px ${accent}66` }}
-      />
-      <span className="font-mono text-[10px] text-white/40 w-[30px] flex-shrink-0">
+      <span className="relative z-10 spot-dot">
+        <GlowDot color={accent} size={6} />
+      </span>
+      <span className="relative z-10 font-mono text-[9.5px] text-white/40 w-[30px] flex-shrink-0 tracking-[0.06em] spot-dim">
         {id === "all" ? "·" : short}
       </span>
-      <span className="flex-1 truncate text-left">{name}</span>
+      <span className="relative z-10 flex-1 truncate text-left spot-target">{name}</span>
       {experimental && (
-        <span className="font-mono text-[8.5px] text-[#ff3da6] tracking-[0.14em] ml-auto">EXP</span>
+        <span className="relative z-10 font-mono text-[8px] text-[#ff3da6] tracking-[0.14em] ml-auto border border-[#ff3da6]/30 px-1 py-[1px] spot-target">
+          EXP
+        </span>
       )}
       {count != null && !experimental && (
-        <span className="font-mono text-[9.5px] text-white/40 ml-auto">{count}</span>
+        <span className="relative z-10 font-mono text-[9.5px] text-white/40 ml-auto spot-dim">{count}</span>
       )}
-    </button>
+    </motion.button>
   );
 }

@@ -2,6 +2,17 @@
 
 All notable changes to ConsoleMini are documented here. Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.1.3] - 2026-07-18
+
+### Added
+- Boot sequence: phosphor terminal intro on launch, skippable with any key, click, or pad button (`BootSequence.tsx`).
+- Ambient canvas background with per-console color ribbons and film grain (`Ambient.tsx`).
+- Spatial focus system for pad/keyboard navigation with animated focus ring (`lib/focus.tsx`).
+
+### Changed
+- Visual refresh across the launcher: hero, game grid, sidebar, console cards, settings, recent view, top bar, and title bar.
+- Recompressed screenshots (README loads ~4 MB lighter).
+
 ## [0.1.0] - 2026-04-22
 
 ### Added

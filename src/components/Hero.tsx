@@ -1,14 +1,16 @@
-import { useMemo } from "react";
+import { useMemo, useRef } from "react";
+import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { CONSOLE_BY_ID, CONSOLES } from "@/lib/emulators";
 import { useStore } from "@/lib/store";
-import { Btn, XGlyph, Pill, paletteFromTitle } from "@/lib/ui";
+import { GlowDot, paletteFromTitle } from "@/lib/ui";
 import { bridge } from "@/lib/ipc";
+
+const EASE: [number, number, number, number] = [0.32, 0.72, 0, 1];
 
 export function Hero() {
   const { games, setSelectedConsole } = useStore();
 
   const last = useMemo(() => {
-    // most recently touched / first indexed title as "continue"
     if (games.length === 0) return null;
     const sorted = [...games].sort((a, b) => (b.lastPlayed ?? 0) - (a.lastPlayed ?? 0));
     return sorted[0];
@@ -18,171 +20,248 @@ export function Hero() {
     return <EmptyHero onPick={(id) => setSelectedConsole(id)} />;
   }
 
-  const c = CONSOLE_BY_ID[last.console];
-  const palette = paletteFromTitle(last.title);
-  const pct = Math.min(99, Math.max(3, (last.playCount ?? 0) * 12)); // rough familiarity from play count
-  const initials = last.title
+  return <ResumeHero gameId={last.id} />;
+}
+
+function ResumeHero({ gameId }: { gameId: string }) {
+  const game = useStore((s) => s.games.find((g) => g.id === gameId));
+  const ref = useRef<HTMLElement>(null);
+  const mx = useMotionValue(0.5);
+  const my = useMotionValue(0.5);
+  const rX = useSpring(useTransform(my, [0, 1], [4, -4]), { stiffness: 140, damping: 18 });
+  const rY = useSpring(useTransform(mx, [0, 1], [-5, 5]), { stiffness: 140, damping: 18 });
+
+  if (!game) return null;
+  const c = CONSOLE_BY_ID[game.console];
+  const palette = paletteFromTitle(game.title);
+  const pct = Math.min(99, Math.max(3, (game.playCount ?? 0) * 12));
+  const initials = game.title
     .split(/\s+/)
     .slice(0, 2)
     .map((w) => w[0]?.toUpperCase() ?? "")
     .join("");
+  const catalog = `№ ${String(Math.abs(game.id.split("").reduce((a, ch) => a + ch.charCodeAt(0), 0)) % 900 + 100).padStart(3, "0")}`;
 
   return (
-    <section
-      className="relative rounded-2xl overflow-hidden mb-6"
-      style={{ background: "#0c0e14", border: "1px solid rgba(255,255,255,0.06)" }}
+    <motion.section
+      ref={ref}
+      initial={{ opacity: 0, y: 18 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.45, ease: EASE }}
+      onMouseMove={(e) => {
+        const r = ref.current?.getBoundingClientRect();
+        if (!r) return;
+        mx.set((e.clientX - r.left) / r.width);
+        my.set((e.clientY - r.top) / r.height);
+      }}
+      onMouseLeave={() => {
+        mx.set(0.5);
+        my.set(0.5);
+      }}
+      className="relative mb-10"
     >
-      <div className="grid min-h-[240px]" style={{ gridTemplateColumns: "minmax(260px, 360px) 1fr" }}>
-        {/* CRT cover panel */}
-        <div
-          className="relative overflow-hidden"
-          style={{
-            background: `radial-gradient(120% 100% at 20% 20%, ${palette[0]} 0%, ${palette[1]} 60%, #060910 100%)`,
-          }}
-        >
-          <div className="absolute inset-0 scanlines opacity-60" />
-          <div className="absolute inset-0 grid place-items-center">
-            <div
-              className="w-[180px] h-[180px] rounded-[18px] grid place-items-center relative overflow-hidden"
-              style={{
-                background: `linear-gradient(135deg, ${palette[0]} 0%, ${palette[1]} 100%)`,
-                border: `2px solid ${c.accent}66`,
-                boxShadow: `0 0 40px ${c.accent}30, inset 0 0 30px rgba(0,0,0,0.4)`,
-              }}
-            >
-              <div
-                className="font-display font-extrabold leading-[0.9] tracking-[-0.05em]"
-                style={{
-                  fontSize: 64,
-                  color: c.accent,
-                  textShadow: `0 0 20px ${c.accent}99, 4px 4px 0 rgba(0,0,0,0.4)`,
-                }}
-              >
-                {initials || "??"}
-              </div>
-              <div className="absolute left-3 right-3 bottom-2.5 text-center font-mono text-[8.5px] tracking-[0.14em] text-white/50">
-                {c.shortName} · {c.year}
-              </div>
+      {/* channel kicker */}
+      <div className="flex items-center justify-between font-mono text-[10px] tracking-[0.24em] text-white/45 mb-4">
+        <span className="flex items-center gap-2.5">
+          <GlowDot color={c.accent} pulse />
+          CH·RESUME — {c.shortName} · {c.vendor.toUpperCase()} · {c.year}
+        </span>
+        <span className="text-white/30">{catalog} / {c.emulator.name.toUpperCase()}</span>
+      </div>
+
+      <div className="grid gap-10 items-end" style={{ gridTemplateColumns: "minmax(0,1fr) auto" }}>
+        {/* title block — massive, light, uppercase */}
+        <div className="min-w-0">
+          <h1
+            className="font-display stretch-wide uppercase leading-[0.92] truncate"
+            style={{ fontSize: "clamp(40px, 5.2vw, 84px)", fontWeight: 320, letterSpacing: "0.005em" }}
+          >
+            {game.title}
+          </h1>
+
+          <div className="flex items-center gap-4 mt-6 max-w-[520px]">
+            <span className="font-mono text-[10px] tracking-[0.2em] text-white/45">PROGRESS</span>
+            <div className="flex-1 h-px relative" style={{ background: "rgba(255,255,255,0.12)" }}>
+              <motion.div
+                className="absolute left-0 top-0 h-px"
+                initial={{ width: 0 }}
+                animate={{ width: `${pct}%` }}
+                transition={{ duration: 0.9, ease: EASE, delay: 0.3 }}
+                style={{ background: c.accent, boxShadow: `0 0 10px ${c.accent}` }}
+              />
+              <motion.div
+                className="absolute w-[7px] h-[7px] -top-[3px]"
+                initial={{ left: 0 }}
+                animate={{ left: `${pct}%` }}
+                transition={{ duration: 0.9, ease: EASE, delay: 0.3 }}
+                style={{ background: c.accent, boxShadow: `0 0 12px ${c.accent}` }}
+              />
             </div>
+            <span className="font-mono text-[11px] tabular-nums" style={{ color: c.accent }}>
+              {String(pct).padStart(2, "0")}%
+            </span>
           </div>
-          <div
-            className="absolute inset-0 pointer-events-none"
-            style={{ background: "radial-gradient(100% 100% at 50% 50%, transparent 40%, rgba(0,0,0,0.6) 100%)" }}
-          />
-          <div className="absolute top-[14px] left-[14px] flex items-center gap-1.5 font-mono text-[9.5px] tracking-[0.14em] text-white/75">
-            <span
-              className="w-1.5 h-1.5 rounded-full animate-cmpulse"
-              style={{ background: "#ff3366", boxShadow: "0 0 8px #ff3366" }}
+
+          {/* prompt CTAs */}
+          <div className="flex items-center gap-3 mt-7">
+            <PromptBtn
+              accent={c.accent}
+              label="RESUME"
+              primary
+              onClick={async () => {
+                await bridge.launch(game.console, game.path);
+                useStore.getState().markPlayed(game.id);
+              }}
             />
-            RESUME · SAVE STATE {String((last.playCount ?? 1) % 9 || 1).padStart(2, "0")}
+            <PromptBtn accent={c.accent} label="SAVE STATES" />
+            <PromptBtn accent={c.accent} label="DETAILS" />
           </div>
         </div>
 
-        {/* Info column */}
-        <div className="p-7 flex flex-col gap-4">
-          <div>
-            <div className="flex items-center gap-2.5 font-mono text-[10px] tracking-[0.18em] text-white/40">
-              <span className="w-1.5 h-1.5 rounded-full" style={{ background: c.accent }} />
-              {c.shortName} · {c.vendor.toUpperCase()} · {c.year}
-            </div>
-            <h1 className="font-display font-bold leading-[1.05] tracking-tightest mt-2" style={{ fontSize: 40 }}>
-              {last.title}
-            </h1>
-            <div className="text-[13px] text-white/55 mt-1.5">
-              Last played · {pct}% complete · {c.emulator.name}
-            </div>
-          </div>
-
-          <div>
-            <div className="h-1 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.06)" }}>
-              <div
-                className="h-full"
-                style={{
-                  width: `${pct}%`,
-                  background: "linear-gradient(90deg, #5fbf6f, #c6ff3d)",
-                  boxShadow: "0 0 12px rgba(198,255,61,0.5)",
-                }}
-              />
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2.5">
-            <Btn
-              variant="primary"
-              size="lg"
-              accent="#c6ff3d"
-              onClick={async () => {
-                await bridge.launch(last.console, last.path);
-                useStore.getState().markPlayed(last.id);
+        {/* CRT cover in notched double frame */}
+        <div className="relative hidden md:block" style={{ width: 218, height: 218 }}>
+          <div
+            className="notch absolute inset-0"
+            style={{ border: "1px solid rgba(255,255,255,0.14)", background: "rgba(255,255,255,0.02)" }}
+          />
+          <div
+            className="notch-sm absolute"
+            style={{ inset: 7, border: `1px solid ${c.accent}45` }}
+          />
+          <motion.div
+            className="notch-sm absolute overflow-hidden grid place-items-center"
+            style={{
+              inset: 12,
+              rotateX: rX,
+              rotateY: rY,
+              transformStyle: "preserve-3d",
+              background: `radial-gradient(130% 110% at 25% 20%, ${palette[0]} 0%, ${palette[1]} 62%, #05070c 100%)`,
+            }}
+          >
+            <div className="absolute inset-0 scanlines opacity-70" />
+            <div className="crt-sweep" />
+            <div
+              className="font-display font-black stretch-wide leading-[0.9]"
+              style={{
+                fontSize: 76,
+                color: "rgba(255,255,255,0.95)",
+                textShadow: `0 0 26px ${c.accent}80, 4px 5px 0 rgba(0,0,0,0.45)`,
               }}
             >
-              <svg width="11" height="11" viewBox="0 0 10 10">
-                <path d="M1 1 L9 5 L1 9 Z" fill="currentColor" />
-              </svg>
-              Resume
-              <span
-                className="inline-flex items-center gap-1 font-mono text-[9.5px] rounded-[4px] px-1.5 py-[2px]"
-                style={{ background: "rgba(0,0,0,0.2)" }}
-              >
-                <XGlyph /> Press
-              </span>
-            </Btn>
-            <Btn variant="ghost" size="lg">
-              <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
-                <rect x="2" y="3" width="12" height="10" rx="1.5" />
-                <path d="M5 6v4 M8 6v4 M11 6v4" />
-              </svg>
-              Save states
-            </Btn>
-            <Btn variant="ghost" size="lg">
-              <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
-                <circle cx="8" cy="8" r="5.5" />
-                <path d="M8 4.5V8l2.5 1.5" />
-              </svg>
-              Rewind
-            </Btn>
-            <div className="flex-1" />
-            <Pill accent="#c6ff3d" filled>
-              ● LIVING-ROOM
-            </Pill>
+              {initials || "??"}
+            </div>
+            <div className="absolute left-0 right-0 bottom-3 text-center font-mono text-[8.5px] tracking-[0.2em] text-white/55">
+              {c.shortName} · {c.year}
+            </div>
+          </motion.div>
+          <div className="absolute -bottom-6 right-0 font-mono text-[9px] tracking-[0.2em] text-white/35">
+            SAVE {String((game.playCount ?? 1) % 9 || 1).padStart(2, "0")} · AUTO
           </div>
         </div>
       </div>
-    </section>
+
+      <div className="hairline-fade mt-10" />
+    </motion.section>
+  );
+}
+
+/** terminal-style prompt button: `> LABEL`, accent flips on hover */
+function PromptBtn({
+  accent,
+  label,
+  primary = false,
+  onClick,
+}: {
+  accent: string;
+  label: string;
+  primary?: boolean;
+  onClick?: () => void;
+}) {
+  return (
+    <motion.button
+      onClick={onClick}
+      data-focusable
+      whileTap={{ scale: 0.96 }}
+      className="group/btn relative h-10 px-5 flex items-center gap-2.5 font-mono text-[11.5px] tracking-[0.18em] focus-ring"
+      style={{
+        border: `1px solid ${primary ? accent : "rgba(255,255,255,0.16)"}`,
+        color: primary ? "#07080b" : "rgba(255,255,255,0.85)",
+        background: primary ? accent : "transparent",
+        boxShadow: primary ? `0 0 24px ${accent}35` : undefined,
+        transition: "border-color 0.25s var(--ease-glide), color 0.25s var(--ease-glide), background 0.25s var(--ease-glide)",
+      }}
+      onMouseEnter={(e) => {
+        if (!primary) {
+          e.currentTarget.style.borderColor = accent;
+          e.currentTarget.style.color = accent;
+        }
+      }}
+      onMouseLeave={(e) => {
+        if (!primary) {
+          e.currentTarget.style.borderColor = "rgba(255,255,255,0.16)";
+          e.currentTarget.style.color = "rgba(255,255,255,0.85)";
+        }
+      }}
+    >
+      <span style={{ color: primary ? "#07080b" : accent }}>›</span>
+      {label}
+    </motion.button>
   );
 }
 
 function EmptyHero({ onPick }: { onPick: (id: (typeof CONSOLES)[number]["id"]) => void }) {
   return (
-    <section
-      className="relative rounded-2xl overflow-hidden mb-6 p-7"
-      style={{ background: "#0c0e14", border: "1px solid rgba(255,255,255,0.06)" }}
+    <motion.section
+      initial={{ opacity: 0, y: 18 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.45, ease: EASE }}
+      className="relative mb-10"
     >
-      <div className="flex items-center gap-2 font-mono text-[10px] tracking-[0.18em] text-white/40">
-        <span className="w-1.5 h-1.5 rounded-full bg-accent shadow-[0_0_8px_#c6ff3d]" />
-        LIVING-ROOM MODE · APPLE SILICON
+      <div className="flex items-center gap-2.5 font-mono text-[10px] tracking-[0.24em] text-white/45 mb-4">
+        <GlowDot color="#d3fd50" pulse />
+        CH·00 — NO SIGNAL · MAC MINI EDITION
       </div>
-      <h1 className="font-display font-bold leading-[1.05] tracking-tightest mt-2" style={{ fontSize: 40 }}>
-        A quiet launcher for the <span className="text-accent">couch</span>.
+
+      <h1
+        className="font-display stretch-wide uppercase leading-[0.92]"
+        style={{ fontSize: "clamp(40px, 5.2vw, 84px)", fontWeight: 320, letterSpacing: "0.005em" }}
+      >
+        Ten systems.
+        <br />
+        <span style={{ color: "#d3fd50" }}>Zero</span> cartridges
+        <br />
+        on the shelf.
       </h1>
-      <p className="mt-2 text-[13.5px] text-white/55 max-w-xl leading-relaxed">
-        Point ConsoleMini at a folder of ROMs — we index them and hand them to the right emulator. Plug a controller,
-        sit back.
+
+      <p className="mt-6 text-[14px] text-white/55 max-w-lg leading-relaxed">
+        Point a system at a folder of ROMs and it joins the catalog. Pick one to start the transmission:
       </p>
-      <div className="mt-5 flex flex-wrap items-center gap-2">
-        {CONSOLES.slice(0, 6).map((c) => (
-          <button
+
+      <div className="mt-7 flex flex-wrap items-center gap-x-5 gap-y-2.5">
+        {CONSOLES.slice(0, 6).map((c, i) => (
+          <motion.button
             key={c.id}
+            data-focusable
             onClick={() => onPick(c.id)}
-            className="h-8 px-3 rounded-md flex items-center gap-2 text-[12px] focus-ring"
-            style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.2 + i * 0.055, duration: 0.35, ease: EASE }}
+            className="group flex items-center gap-2 font-mono text-[12.5px] tracking-[0.1em] py-1 focus-ring"
+            style={{ color: "rgba(255,255,255,0.6)" }}
+            onMouseEnter={(e) => (e.currentTarget.style.color = c.accent)}
+            onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.6)")}
           >
-            <span className="w-1.5 h-1.5 rounded-full" style={{ background: c.accent, boxShadow: `0 0 6px ${c.accent}` }} />
-            <span className="font-mono text-[10px] text-white/45 w-8">{c.shortName}</span>
-            <span className="text-white/75">{c.name}</span>
-          </button>
+            <span style={{ color: c.accent }}>›</span>
+            {c.shortName}
+            <span className="text-white/30 group-hover:hidden">{c.name}</span>
+            <span className="hidden group-hover:inline" style={{ color: c.accent }}>
+              {c.name}
+            </span>
+          </motion.button>
         ))}
       </div>
-    </section>
+
+      <div className="hairline-fade mt-10" />
+    </motion.section>
   );
 }

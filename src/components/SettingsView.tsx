@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import {
   RefreshCw,
   Download,
@@ -57,64 +58,94 @@ const NAV: NavEntry[] = [
   { id: "credits", label: "Credits", section: "about" },
 ];
 
+const EASE: [number, number, number, number] = [0.32, 0.72, 0, 1];
+
 export function SettingsView() {
   const [panel, setPanel] = useState<PanelId>("emulators");
 
   return (
-    <div className="flex gap-6">
-      <nav className="w-40 flex-shrink-0">
+    <div className="flex gap-7">
+      <motion.nav
+        initial={{ opacity: 0, x: -14 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.4, ease: EASE }}
+        className="w-44 flex-shrink-0"
+      >
         <RailHeader>GENERAL</RailHeader>
         {NAV.filter((n) => n.section === "general").map((n) => (
           <RailItem key={n.id} label={n.label} active={panel === n.id} onClick={() => setPanel(n.id)} />
         ))}
-        <div className="h-4" />
+        <div className="h-5" />
         <RailHeader>MAC MINI</RailHeader>
         {NAV.filter((n) => n.section === "macmini").map((n) => (
           <RailItem key={n.id} label={n.label} active={panel === n.id} onClick={() => setPanel(n.id)} />
         ))}
-        <div className="h-4" />
+        <div className="h-5" />
         <RailHeader>ABOUT</RailHeader>
         {NAV.filter((n) => n.section === "about").map((n) => (
           <RailItem key={n.id} label={n.label} active={panel === n.id} onClick={() => setPanel(n.id)} />
         ))}
-      </nav>
+      </motion.nav>
 
       <div className="flex-1 min-w-0">
-        {panel === "emulators" && <EmulatorsPanel />}
-        {panel === "controllers" && <ControllersPanel />}
-        {panel === "display" && <DisplayPanel />}
-        {panel === "audio" && <AudioPanel />}
-        {panel === "saves" && <SavesPanel />}
-        {panel === "kiosk" && <KioskPanel />}
-        {panel === "autolaunch" && <AutoLaunchPanel />}
-        {panel === "bluetooth" && <BluetoothPanel />}
-        {panel === "thermals" && <ThermalsPanel />}
-        {panel === "version" && <VersionPanel />}
-        {panel === "credits" && <CreditsPanel />}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={panel}
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.26, ease: EASE }}
+          >
+            {panel === "emulators" && <EmulatorsPanel />}
+            {panel === "controllers" && <ControllersPanel />}
+            {panel === "display" && <DisplayPanel />}
+            {panel === "audio" && <AudioPanel />}
+            {panel === "saves" && <SavesPanel />}
+            {panel === "kiosk" && <KioskPanel />}
+            {panel === "autolaunch" && <AutoLaunchPanel />}
+            {panel === "bluetooth" && <BluetoothPanel />}
+            {panel === "thermals" && <ThermalsPanel />}
+            {panel === "version" && <VersionPanel />}
+            {panel === "credits" && <CreditsPanel />}
+          </motion.div>
+        </AnimatePresence>
       </div>
     </div>
   );
 }
 
 function RailHeader({ children }: { children: React.ReactNode }) {
-  return <div className="font-mono text-[9.5px] tracking-[0.22em] text-white/35 mb-2.5">{children}</div>;
+  return <div className="font-mono text-[9px] tracking-[0.24em] text-white/35 mb-2.5">{children}</div>;
 }
 
 function RailItem({ label, active, onClick }: { label: string; active?: boolean; onClick?: () => void }) {
   return (
-    <button
+    <motion.button
       onClick={onClick}
-      className="w-full text-left px-2.5 py-1.5 mb-[1px] rounded-md text-[12.5px] focus-ring"
+      data-focusable
+      whileHover={{ x: 2 }}
+      whileTap={{ scale: 0.98 }}
+      transition={{ type: "spring", stiffness: 480, damping: 38 }}
+      className="relative w-full text-left px-3 py-2 mb-[2px] rounded-[3px] text-[12.5px] focus-ring overflow-hidden"
       style={{
         color: active ? "white" : "rgba(255,255,255,0.55)",
-        background: active ? "rgba(255,255,255,0.05)" : "transparent",
-        fontWeight: active ? 500 : 400,
-        borderLeft: `2px solid ${active ? "#c6ff3d" : "transparent"}`,
-        paddingLeft: 10,
+        fontWeight: active ? 550 : 400,
       }}
     >
-      {label}
-    </button>
+      <span className="spot-fill" aria-hidden />
+      {active && (
+        <motion.span
+          layoutId="settings-rail"
+          transition={{ type: "spring", stiffness: 480, damping: 38 }}
+          className="absolute inset-0"
+          style={{
+            background: "linear-gradient(90deg, rgba(211,253,80,0.09) 0%, rgba(255,255,255,0.04) 55%)",
+            border: "1px solid rgba(211,253,80,0.22)",
+          }}
+        />
+      )}
+      <span className="relative z-10 spot-target">{label}</span>
+    </motion.button>
   );
 }
 
@@ -134,22 +165,27 @@ function PanelHeader({
   right?: React.ReactNode;
 }) {
   return (
-    <div className="flex items-start justify-between mb-5">
-      <div className="flex gap-3">
+    <div className="flex items-start justify-between mb-6">
+      <div className="flex gap-3.5">
         {icon && (
           <div
-            className="w-11 h-11 rounded-[10px] grid place-items-center text-white/70 flex-shrink-0"
-            style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)" }}
+            className="w-11 h-11 rounded-xl grid place-items-center flex-shrink-0"
+            style={{
+              background: "rgba(211,253,80,0.06)",
+              border: "1px solid rgba(211,253,80,0.18)",
+              color: "#d3fd50",
+              boxShadow: "0 0 24px rgba(211,253,80,0.08)",
+            }}
           >
             {icon}
           </div>
         )}
         <div>
-          <div className="font-mono text-[10px] tracking-[0.22em] text-white/40 uppercase">{kicker}</div>
-          <h1 className="font-display font-bold tracking-tightest mt-1 leading-[1.1]" style={{ fontSize: 28 }}>
+          <div className="font-mono text-[10px] tracking-[0.24em] text-white/40 uppercase">{kicker}</div>
+          <h1 className="font-display stretch-wide uppercase leading-[1.05] mt-1.5" style={{ fontSize: 30, fontWeight: 400 }}>
             {title}
           </h1>
-          {sub && <p className="text-white/55 text-[13px] mt-1.5 max-w-[560px]">{sub}</p>}
+          {sub && <p className="text-white/55 text-[13px] mt-2 max-w-[580px] leading-relaxed">{sub}</p>}
         </div>
       </div>
       {right && <div className="flex items-center gap-2 flex-shrink-0">{right}</div>}
@@ -158,20 +194,13 @@ function PanelHeader({
 }
 
 function Card({ children, className = "" }: { children: React.ReactNode; className?: string }) {
-  return (
-    <div
-      className={"rounded-xl " + className}
-      style={{ background: "#0c0e14", border: "1px solid rgba(255,255,255,0.06)" }}
-    >
-      {children}
-    </div>
-  );
+  return <div className={"rounded-2xl surface " + className}>{children}</div>;
 }
 
 function StatTile({
   value,
   label,
-  accent = "rgba(255,255,255,0.75)",
+  accent = "rgba(255,255,255,0.85)",
   detail,
 }: {
   value: string;
@@ -180,18 +209,23 @@ function StatTile({
   detail?: string;
 }) {
   return (
-    <div
-      className="px-[14px] py-3.5 rounded-[10px]"
-      style={{ border: "1px solid rgba(255,255,255,0.06)", background: "rgba(255,255,255,0.02)" }}
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.35, ease: EASE }}
+      className="px-[15px] py-4 rounded-xl surface-deep"
     >
-      <div className="font-display font-bold tracking-[-0.02em]" style={{ fontSize: 22, color: accent }}>
+      <div
+        className="font-display font-black stretch-wide tracking-[0.01em]"
+        style={{ fontSize: 23, color: accent, textShadow: `0 0 18px ${accent}55` }}
+      >
         {value}
       </div>
-      <div className="font-mono text-[9.5px] tracking-[0.18em] text-white/40 mt-1">
+      <div className="font-mono text-[9px] tracking-[0.2em] text-white/40 mt-1.5">
         {label}
         {detail && <span className="text-white/25 ml-1.5">· {detail}</span>}
       </div>
-    </div>
+    </motion.div>
   );
 }
 
@@ -255,7 +289,7 @@ function EmulatorsPanel() {
       />
 
       <div className="grid grid-cols-4 gap-2.5 mb-[22px]">
-        <StatTile value={`${readyCount}/${total}`} label="READY" accent="#c6ff3d" />
+        <StatTile value={`${readyCount}/${total}`} label="READY" accent="#d3fd50" />
         <StatTile value={`${total - readyCount}`} label="MISSING" accent="#ff9f47" />
         <StatTile value="—" label="DISK USED" />
         <StatTile value="M-SERIES" label="APPLE SILICON" accent="#60a5fa" detail="ARM64" />
@@ -340,7 +374,7 @@ function EmulatorRow({
 }) {
   return (
     <div
-      className="grid items-center gap-4 px-4 py-3.5"
+      className="grid items-center gap-4 px-4 py-3.5 transition-colors hover:bg-white/[0.025]"
       style={{ gridTemplateColumns: "auto 1fr auto auto", borderBottom: "1px solid rgba(255,255,255,0.04)" }}
     >
       <div className="flex items-center gap-2.5 min-w-[110px]">
@@ -361,7 +395,7 @@ function EmulatorRow({
       </div>
       <div>
         {ready ? (
-          <Pill accent="#c6ff3d" filled>
+          <Pill accent="#d3fd50" filled>
             ● READY
           </Pill>
         ) : ready === false ? (
@@ -447,7 +481,7 @@ function PadRow({ pad }: { pad: Gamepad }) {
       className="grid items-center gap-4 py-3 px-1"
       style={{ gridTemplateColumns: "auto 1fr auto", borderBottom: "1px solid rgba(255,255,255,0.04)" }}
     >
-      <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: "#c6ff3d", boxShadow: "0 0 8px #c6ff3d" }} />
+      <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: "#d3fd50", boxShadow: "0 0 8px #d3fd50" }} />
       <div className="min-w-0">
         <div className="font-mono text-[10px] tracking-[0.14em] text-white/40">SLOT {pad.index}</div>
         <div className="text-[13.5px] font-semibold truncate">{pad.id}</div>
@@ -456,7 +490,7 @@ function PadRow({ pad }: { pad: Gamepad }) {
         </div>
       </div>
       <div className="text-right">
-        <Pill accent="#c6ff3d" filled>
+        <Pill accent="#d3fd50" filled>
           ● READY
         </Pill>
         <div className="font-mono text-[10px] text-white/45 mt-1.5">
@@ -492,7 +526,7 @@ function DisplayPanel() {
       />
 
       <div className="grid grid-cols-4 gap-2.5 mb-5">
-        <StatTile value={`${dims.w}×${dims.h}`} label="PRIMARY DISPLAY" accent="#c6ff3d" />
+        <StatTile value={`${dims.w}×${dims.h}`} label="PRIMARY DISPLAY" accent="#d3fd50" />
         <StatTile value={`${dims.dpr}x`} label="DEVICE PIXEL RATIO" />
         <StatTile value={`${window.innerWidth}×${window.innerHeight}`} label="WINDOW" accent="#60a5fa" />
         <StatTile value="F11" label="FULLSCREEN" detail="HOTKEY" />
@@ -573,7 +607,7 @@ function SavesPanel() {
       />
 
       <div className="grid grid-cols-4 gap-2.5 mb-5">
-        <StatTile value={String(totalFiles)} label="STATE FILES" accent="#c6ff3d" />
+        <StatTile value={String(totalFiles)} label="STATE FILES" accent="#d3fd50" />
         <StatTile value={`${present}/${entries.length}`} label="VAULTS PRESENT" accent="#60a5fa" />
         <StatTile value="F1 / F4" label="MGBA SAVE / LOAD" />
         <StatTile value="F2 / F3" label="RETROARCH SAVE / LOAD" />
@@ -611,7 +645,7 @@ function SavesPanel() {
               </div>
               <div>
                 {e.exists && e.fileCount > 0 ? (
-                  <Pill accent="#c6ff3d" filled>
+                  <Pill accent="#d3fd50" filled>
                     ● {e.fileCount}
                   </Pill>
                 ) : e.exists ? (
@@ -791,7 +825,7 @@ function VersionPanel() {
     <div>
       <PanelHeader kicker="ABOUT / BUILD" title={`Version ${info?.version ?? "0.1.0"}`} icon={<Info className="size-5" />} />
       <div className="grid grid-cols-4 gap-2.5 mb-5">
-        <StatTile value={info?.version ?? "0.1.0"} label="CONSOLEMINI" accent="#c6ff3d" />
+        <StatTile value={info?.version ?? "0.1.0"} label="CONSOLEMINI" accent="#d3fd50" />
         <StatTile value={info?.electron ?? "-"} label="ELECTRON" accent="#60a5fa" />
         <StatTile value={info?.chrome ?? "-"} label="CHROMIUM" />
         <StatTile value={info?.node ?? "-"} label="NODE" />
