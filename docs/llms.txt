@@ -1,0 +1,23 @@
+# ConsoleMini
+
+ConsoleMini is a free, MIT-licensed macOS launcher for game libraries. Separate Apple Silicon and Intel builds are available. The current release is 0.1.3.
+
+## Features
+
+- Controller-first menus, game-folder indexing, and emulator launching.
+- PS1 (DuckStation), PS2 (PCSX2), PS3 (RPCS3), PS4 (shadPS4), PSP (PPSSPP), Nintendo 64 (Mupen64Plus), SNES and NES (RetroArch), Game Boy Advance (mGBA), and Dreamcast (Flycast).
+- Emulator installation status and Homebrew installation tools.
+- Read-only save-state folder overview with Finder links.
+- Optional kiosk setup script that changes launch-at-login, sleep and Dock settings.
+
+## Requirements and limits
+
+Users supply legally obtained games and required BIOS files. Emulators are separate applications with their own requirements and game compatibility. PS4 support is experimental. Game controls and save states are handled by each emulator.
+
+## Install and links
+
+- Homebrew: `brew install --cask momenbasel/tap/consolemini`
+- Website: https://www.moamenbasel.com/ConsoleMini/
+- Downloads: https://github.com/momenbasel/ConsoleMini/releases/latest
+- Source and setup: https://github.com/momenbasel/ConsoleMini
+- Support: https://github.com/momenbasel/ConsoleMini/issues

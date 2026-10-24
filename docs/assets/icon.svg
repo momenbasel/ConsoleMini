@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0f1422"/>
+      <stop offset="0.5" stop-color="#1a1230"/>
+      <stop offset="1" stop-color="#2a0a2a"/>
+    </linearGradient>
+    <radialGradient id="aurora" cx="0.3" cy="0.2" r="0.8">
+      <stop offset="0" stop-color="#28e2ff" stop-opacity="0.55"/>
+      <stop offset="0.55" stop-color="#8a5cff" stop-opacity="0.25"/>
+      <stop offset="1" stop-color="#ff3da6" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="case" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f5ecd2"/>
+      <stop offset="0.45" stop-color="#e8dfc5"/>
+      <stop offset="1" stop-color="#c8bca0"/>
+    </linearGradient>
+    <linearGradient id="caseSide" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#cdc1a4"/>
+      <stop offset="1" stop-color="#a89b7e"/>
+    </linearGradient>
+    <linearGradient id="screenGlass" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0a3a2c"/>
+      <stop offset="1" stop-color="#031c14"/>
+    </linearGradient>
+    <linearGradient id="scan" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#9affd0" stop-opacity="0"/>
+      <stop offset="0.45" stop-color="#9affd0" stop-opacity="0.18"/>
+      <stop offset="1" stop-color="#9affd0" stop-opacity="0"/>
+    </linearGradient>
+    <pattern id="scanlines" width="4" height="4" patternUnits="userSpaceOnUse">
+      <rect width="4" height="2" fill="#9affd0" fill-opacity="0.06"/>
+    </pattern>
+    <filter id="soft" x="-10%" y="-10%" width="120%" height="120%">
+      <feGaussianBlur stdDeviation="6"/>
+    </filter>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="14" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- background card -->
+  <rect width="1024" height="1024" rx="220" fill="url(#bg)"/>
+  <rect width="1024" height="1024" rx="220" fill="url(#aurora)"/>
+  <g opacity="0.12">
+    <path d="M0 200 H1024 M0 360 H1024 M0 520 H1024 M0 680 H1024 M0 840 H1024" stroke="#fff" stroke-width="1"/>
+    <path d="M200 0 V1024 M360 0 V1024 M520 0 V1024 M680 0 V1024 M840 0 V1024" stroke="#fff" stroke-width="1"/>
+  </g>
+
+  <!-- shadow under mac -->
+  <ellipse cx="512" cy="900" rx="290" ry="28" fill="#000" opacity="0.45" filter="url(#soft)"/>
+
+  <!-- classic macintosh 128k body -->
+  <g transform="translate(220 200)">
+    <!-- body main -->
+    <rect x="0" y="0" width="584" height="700" rx="44" fill="url(#case)" stroke="#3a3530" stroke-width="6"/>
+    <!-- side highlight -->
+    <rect x="8" y="8" width="568" height="40" rx="36" fill="#ffffff" opacity="0.35"/>
+    <!-- bottom darker face (front foot panel) -->
+    <rect x="0" y="560" width="584" height="140" rx="44" fill="url(#caseSide)"/>
+    <line x1="0" y1="560" x2="584" y2="560" stroke="#3a3530" stroke-width="6"/>
+
+    <!-- screen bezel -->
+    <rect x="62" y="80" width="460" height="360" rx="22" fill="#1a1410" stroke="#3a3530" stroke-width="6"/>
+    <!-- screen glass -->
+    <rect x="86" y="104" width="412" height="312" rx="14" fill="url(#screenGlass)"/>
+    <rect x="86" y="104" width="412" height="312" rx="14" fill="url(#scanlines)"/>
+    <rect x="86" y="104" width="412" height="312" rx="14" fill="url(#scan)"/>
+
+    <!-- happy mac face -->
+    <g transform="translate(292 260)" filter="url(#glow)">
+      <!-- eyes -->
+      <rect x="-72" y="-46" width="22" height="22" fill="#9affd0"/>
+      <rect x="50" y="-46" width="22" height="22" fill="#9affd0"/>
+      <!-- smile -->
+      <path d="M-90 4 Q0 84 90 4" stroke="#9affd0" stroke-width="14" fill="none" stroke-linecap="round"/>
+      <!-- play triangle inside happy face cheek (console hint) -->
+      <polygon points="-10,-6 18,8 -10,22" fill="#9affd0" opacity="0.0"/>
+    </g>
+
+    <!-- floppy slot -->
+    <g transform="translate(380 470)">
+      <rect x="0" y="0" width="140" height="14" rx="3" fill="#1a1410"/>
+      <rect x="6" y="4" width="128" height="6" rx="2" fill="#0a0805"/>
+    </g>
+
+    <!-- speaker grille (right of floppy) -->
+    <g transform="translate(80 470)" fill="#3a3530" opacity="0.6">
+      <circle cx="6" cy="6" r="3"/><circle cx="20" cy="6" r="3"/><circle cx="34" cy="6" r="3"/>
+      <circle cx="6" cy="18" r="3"/><circle cx="20" cy="18" r="3"/><circle cx="34" cy="18" r="3"/>
+    </g>
+
+    <!-- rainbow apple logo (top-right corner of body) -->
+    <g transform="translate(498 32) scale(0.55)">
+      <defs>
+        <clipPath id="appleClip">
+          <path d="M40 8 C 30 8 22 14 22 22 C 22 12 12 4 0 4 C 0 22 12 30 22 30
+                   C 8 30 0 42 0 56 C 0 76 14 92 30 92 C 38 92 42 88 50 88
+                   C 58 88 62 92 70 92 C 86 92 100 76 100 56 C 100 42 92 30 78 30
+                   C 86 30 92 22 92 14 C 80 14 70 22 70 30
+                   C 70 22 60 14 50 14 C 46 14 42 16 40 18 Z"/>
+        </clipPath>
+      </defs>
+      <g clip-path="url(#appleClip)">
+        <rect x="0" y="0"  width="100" height="14" fill="#5fbf3a"/>
+        <rect x="0" y="14" width="100" height="14" fill="#f7d300"/>
+        <rect x="0" y="28" width="100" height="14" fill="#f59e0b"/>
+        <rect x="0" y="42" width="100" height="14" fill="#e23a3a"/>
+        <rect x="0" y="56" width="100" height="14" fill="#9f3da6"/>
+        <rect x="0" y="70" width="100" height="22" fill="#2c8fe2"/>
+      </g>
+    </g>
+
+    <!-- "ConsoleMini" engraved label on bottom panel -->
+    <text x="292" y="640" text-anchor="middle" font-family="'Courier New', monospace"
+      font-size="34" font-weight="700" fill="#3a3530" opacity="0.78"
+      letter-spacing="3">ConsoleMini</text>
+  </g>
+
+  <!-- corner sparkles -->
+  <g fill="#fff" opacity="0.85">
+    <circle cx="160" cy="160" r="3"/><circle cx="880" cy="180" r="2"/>
+    <circle cx="900" cy="860" r="3"/><circle cx="120" cy="820" r="2"/>
+  </g>
+</svg>
